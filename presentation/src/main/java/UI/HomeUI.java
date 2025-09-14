@@ -24,6 +24,8 @@ public class HomeUI {
                     //Todo kullanıcı girişi işlemleri
                     break;
                 case "0":
+                    System.out.println("Çıkış yapılıyor...");
+                    System.out.println("Uygulama Kapandı!");
                     return;
                 default:
                     System.out.println("Hatalı veri girişi yaptınız!");
