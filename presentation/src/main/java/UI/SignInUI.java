@@ -40,11 +40,11 @@ public class SignInUI {
             }
 
             //Todo trim ile hatalı veri girişini engelle
-            System.out.print("Password*:"); // required
+            System.out.print("Şifre*:"); // required
             String password = scanner.nextLine();
             while (password.isEmpty()){
-                System.out.println("Password boş olamaz!");
-                System.out.print("Password*:"); // required
+                System.out.println("Şifre boş olamaz!");
+                System.out.print("Şifre*:"); // required
                 password = scanner.nextLine();
             }
 
@@ -55,7 +55,8 @@ public class SignInUI {
             dto.setPassword(password);
 
             UserController controller = new UserController();
-            controller.signIn(dto);
+            String result = controller.signIn(dto);
+            System.out.println(result);
 
             //Todo return veya yönlendirme işlemleri yapılacak
         }
