@@ -2,19 +2,18 @@ package validations;
 
 
 import dto.request.UserSignInRequestDto;
+import util.Regex;
 
 public class UserValidation {
 
     public static class UserSignInRequestDtoValidation{
         public static String isValid(UserSignInRequestDto dto){
-            String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
             if (dto.getFirstName() == null ||
                     dto.getFirstName().isEmpty() ||
                     dto.getFirstName().isBlank() ||
                     dto.getFirstName().length() < 3 ){
                 return  "Ad bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
             }
 
             if (dto.getLastName() == null ||
@@ -22,12 +21,10 @@ public class UserValidation {
                     dto.getLastName().isBlank() ||
                     dto.getLastName().length() < 3 ){
                 return  "Soyad bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
             }
 
-            if (dto.getEmail() == null || !dto.getEmail().matches(EMAIL_REGEX)){
+            if (dto.getEmail() == null || !dto.getEmail().matches(Regex.EMAIL)){
                 return  "Email bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
             }
 
             if (dto.getPassword() == null ||
@@ -35,7 +32,6 @@ public class UserValidation {
                     dto.getPassword().isBlank() ||
                     dto.getPassword().length() < 6 ){
                 return  "Şifre bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
             }
 
             return "";
