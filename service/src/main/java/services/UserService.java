@@ -2,27 +2,33 @@ package services;
 
 import dto.request.UserSignInRequestDto;
 import entity.User;
+import mappers.DtoToUser;
 import repository.UserRepository;
+import util.PasswordHashing;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class UserService {
 
-    public int signIn(UserSignInRequestDto dto) throws SQLException {
+    UserRepository userRepository = new UserRepository();
 
-        //Todo bu email ile kayıt olan varmı?
+    public int save(UserSignInRequestDto dto) throws SQLException, NoSuchAlgorithmException {
 
-        User user = new User();
+        if (isAlreadyExist(dto.getEmail())) {
+            return -1; //Todo response dto oluşturulacak
+        }
 
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        //Todo password hash
-        user.setPassword(dto.getPassword());
+        dto.setPassword(PasswordHashing.hash(dto.getPassword()));
+
+        User user =  DtoToUser.userSignInRequestDtoTo(dto);
         user.setCreatedDate(LocalDateTime.now());
 
-        UserRepository userRepository = new UserRepository();
         return userRepository.save(user);
+    }
+
+    public boolean isAlreadyExist(String email) throws SQLException {
+        return userRepository.isAlreadyExist(email);
     }
 }
