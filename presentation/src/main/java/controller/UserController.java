@@ -2,47 +2,23 @@ package controller;
 
 import dto.request.UserSignInRequestDto;
 import services.UserService;
+import validations.UserValidation;
 
 public class UserController {
 
     public String signIn(UserSignInRequestDto dto){
         try {
-            String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-
-            if (dto.getFirstName() == null ||
-                    dto.getFirstName().isEmpty() ||
-                    dto.getFirstName().isBlank() ||
-                    dto.getFirstName().length() < 3 ){
-                return  "Ad bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
+            final String isValidResult = UserValidation.UserSignInRequestDtoValidation.isValid(dto);
+            if (!isValidResult.equals("")){
+                return isValidResult;
             }
-
-            if (dto.getLastName() == null ||
-                    dto.getLastName().isEmpty() ||
-                    dto.getLastName().isBlank() ||
-                    dto.getLastName().length() < 3 ){
-                return  "Soyad bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
-            }
-
-            if (dto.getEmail() == null || !dto.getEmail().matches(EMAIL_REGEX)){
-                return  "Email bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
-            }
-
-            if (dto.getPassword() == null ||
-                    dto.getPassword().isEmpty() ||
-                    dto.getPassword().isBlank() ||
-                    dto.getPassword().length() < 6 ){
-                return  "Şifre bilgisi geçersiz!";
-                //Todo Validation class'ı ile kontrol et.
-            }
-
 
             UserService userService = new UserService();
-            int result = userService.signIn(dto);
+            int result = userService.save(dto);
 
-            if(result<=0){
+            if (result == -1){
+                return "Bu email adresi zaten kayıtlı!";            }
+            if(result == 0){
                 return "Kayıt İşlemi Başarısız!";
             }
             else
