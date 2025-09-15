@@ -1,34 +1,32 @@
 package controller;
 
 import dto.request.UserSignInRequestDto;
+
+import dto.response.ResponseDto;
 import services.UserService;
 import validations.UserValidation;
 
 public class UserController {
 
-    public String signIn(UserSignInRequestDto dto){
+    public ResponseDto signIn(UserSignInRequestDto dto){
+        ResponseDto responseDto = new ResponseDto();
         try {
             final String isValidResult = UserValidation.UserSignInRequestDtoValidation.isValid(dto);
             if (!isValidResult.equals("")){
-                return isValidResult;
+                responseDto.setStatusCode(400);
+                responseDto.setMessage(isValidResult);
+                responseDto.setSuccess(false);
+                return responseDto;
             }
-
+            //Kayıt işlemleri başladı
             UserService userService = new UserService();
-            int result = userService.save(dto);
-
-            if (result == -1){
-                return "Bu email adresi zaten kayıtlı!";            }
-            if(result == 0){
-                return "Kayıt İşlemi Başarısız!";
-            }
-            else
-                return "Kayıt İşlemi Başarılı!";
+            return userService.save(dto);
         }catch (Exception e){
-            e.printStackTrace();
+            responseDto.setStatusCode(500);
+            responseDto.setMessage(e.getMessage());
+            responseDto.setSuccess(false);
+            return responseDto;
         }
 
-
-        //Todo Geri dönüş tipinin belirlenmesi
-        return null;
     }
 }
