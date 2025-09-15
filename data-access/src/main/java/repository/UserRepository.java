@@ -44,5 +44,31 @@ public class UserRepository {
         return rs.next();
     }
 
+    public User getByEmail(String email) throws SQLException {
 
+        Connection connection = DbConnection.getInstance();
+
+        String sql = """
+                SELECT * FROM users
+                WHERE email = ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setString(1,email);
+
+        ResultSet rs = ps.executeQuery();
+
+        User user = new User();
+        while (rs.next()){
+            user.setId(rs.getInt("id"));
+            user.setFirstName(rs.getString("first_name"));
+            user.setLastName(rs.getString("last_name"));
+            user.setEmail(rs.getString("email"));
+            user.setPassword(rs.getString("passwd"));
+            user.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
+            user.setUpdatedDate(rs.getTimestamp("updated_date").toLocalDateTime());
+        }
+
+        return user;
+    }
 }
