@@ -7,6 +7,8 @@ public class HomeUI {
 
     public void view(){
         while (true){
+            System.out.println("===============Ana Sayfa===============");
+            System.out.println();
             System.out.println("1 - Kullanıcı Kaydı");
             System.out.println("2 - Kullanıcı Girişi");
             System.out.println("0 - Çıkış");
