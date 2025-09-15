@@ -72,4 +72,8 @@ public class User {
         this.updatedDate = updatedDate;
     }
 
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
+
 }
