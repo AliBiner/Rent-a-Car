@@ -7,15 +7,23 @@ import dto.response.UserSignInResponseDto;
 import entity.User;
 import mappers.DtoToUser;
 import repository.UserRepository;
+import util.MyDbConnection;
 import util.PasswordHashing;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class UserService {
 
-    UserRepository userRepository = new UserRepository();
+    UserRepository userRepository;
+    Connection connection;
+
+    public UserService() {
+        this.connection = MyDbConnection.getInstance().getConnection();
+        this.userRepository = new UserRepository(this.connection);
+    }
 
     public ResponseDto save(UserSignInRequestDto dto) throws SQLException, NoSuchAlgorithmException {
 
