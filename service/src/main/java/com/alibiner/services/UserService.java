@@ -1,7 +1,9 @@
 package com.alibiner.services;
 
+import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.request.UserSignInRequestDto;
 import com.alibiner.dto.response.ResponseDto;
+import com.alibiner.dto.response.UserLoginResponseDto;
 import com.alibiner.dto.response.UserSignInResponseDto;
 import com.alibiner.entity.User;
 import com.alibiner.mappers.DtoToUser;
@@ -70,11 +72,46 @@ public class UserService {
         signInResponseDto.setFullName(result.getFullName());
 
         responseDto.setBody(signInResponseDto);
-
+        connection.commit();
         return responseDto;
     }
 
     public boolean isAlreadyExist(String email) throws SQLException {
         return userRepository.isAlreadyExist(email);
+    }
+
+    public ResponseDto login(UserLoginRequestDto dto) throws SQLException, NoSuchAlgorithmException {
+
+        User user = getByEmail(dto.getEmail());
+        ResponseDto responseDto = new ResponseDto();
+        if (user == null){
+            responseDto.setStatusCode(404);
+            responseDto.setMessage("Bu email bilgisinde kullanıcı bulunamdı!");
+            responseDto.setSuccess(false);
+            return responseDto;
+        }
+
+        String passwordHash = PasswordHashing.hash(dto.getPassword());
+
+        if (!passwordHash.equals(user.getPassword())){
+            responseDto.setStatusCode(400);
+            responseDto.setMessage("Email ve ya şifre bilgisi hatalı!");
+            responseDto.setSuccess(false);
+            return responseDto;
+        }
+
+
+        UserLoginResponseDto userLoginResponseDto = new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName());
+
+        responseDto.setStatusCode(200);
+        responseDto.setMessage("Kullanıcı giriş işlemi başarılı!");
+        responseDto.setSuccess(true);
+        responseDto.setBody(userLoginResponseDto);
+        return responseDto;
+
+    }
+
+    public User getByEmail(String email) throws SQLException {
+        return userRepository.getByEmail(email);
     }
 }

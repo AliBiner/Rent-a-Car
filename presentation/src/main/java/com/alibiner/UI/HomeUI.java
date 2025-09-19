@@ -21,9 +21,12 @@ public class HomeUI {
                 case "1":
                     SignInUI signInUI = new SignInUI();
                     signInUI.view(scanner);
+                    signInUI = null;
                     break;
                 case "2":
-                    //Todo kullanıcı girişi işlemleri
+                    LoginUI loginUI = new LoginUI();
+                    loginUI.view(scanner);
+                    loginUI = null;
                     break;
                 case "0":
                     System.out.println("Çıkış yapılıyor...");
