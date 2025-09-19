@@ -54,8 +54,10 @@ public class UserRepository {
 
         ResultSet rs = ps.executeQuery();
 
-        User user = new User();
+        User user = null;
         while (rs.next()){
+            user = new User();
+
             user.setId(rs.getInt("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
@@ -63,6 +65,7 @@ public class UserRepository {
             user.setPassword(rs.getString("passwd"));
             user.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
             user.setUpdatedDate(rs.getTimestamp("updated_date").toLocalDateTime());
+            break;
         }
 
         return user;
