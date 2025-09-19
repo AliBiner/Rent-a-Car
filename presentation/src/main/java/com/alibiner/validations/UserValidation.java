@@ -1,14 +1,18 @@
 package com.alibiner.validations;
 
 
+import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.request.UserSignInRequestDto;
 import com.alibiner.util.Regex;
+
+import java.util.*;
 
 public class UserValidation {
 
     public static class UserSignInRequestDtoValidation{
         public static String isValid(UserSignInRequestDto dto){
 
+            //Todo - diğer method gibi çoklu yanıt için düzenle
             if (dto.getFirstName() == null ||
                     dto.getFirstName().isEmpty() ||
                     dto.getFirstName().isBlank() ||
@@ -36,6 +40,27 @@ public class UserValidation {
 
             return "";
         }
+    }
+
+    public static class UserLoginRequestDtoValidation{
+        public static List<String> validate(UserLoginRequestDto dto){
+            List<String> errorMessages = new ArrayList<>(2);
+
+            if (dto.getEmail() == null){
+                errorMessages.add("Email null olamaz!");
+            } else if (!dto.getEmail().matches(Regex.EMAIL)){
+                errorMessages.add("Email formatı doğru değil!");
+            }
+
+            if (dto.getPassword() == null){
+                errorMessages.add("Şifre null olamaz!");
+            } else if (dto.getPassword().isBlank()) {
+                errorMessages.add("Şifre boş olamaz!");
+            }
+
+            return errorMessages;
+        }
+
     }
 
 }
