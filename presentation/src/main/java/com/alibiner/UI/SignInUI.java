@@ -13,7 +13,7 @@ public class SignInUI {
 
     public void view(Scanner scanner){
 
-        while (true){
+        here : while (true){
             System.out.println("=========Kullanıcı Kayıt Ekranı========");
 
             System.out.println();
@@ -21,9 +21,14 @@ public class SignInUI {
             System.out.println("0 - Bir Üst Menü");
             System.out.print("Seçiminiz: ");
             String choice = scanner.nextLine();
-            if (choice.equals("0")){
-                System.out.println();
-                return;
+            switch (choice){
+                case "1":
+                    break;
+                case "0":
+                    return;
+                default:
+                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                    break here;
             }
 
             System.out.println();
@@ -60,11 +65,9 @@ public class SignInUI {
                 password = scanner.nextLine().trim();
             }
 
-            UserSignInRequestDto dto = new UserSignInRequestDto();
-            dto.setFirstName(name);
-            dto.setLastName(lastname);
-            dto.setEmail(email);
-            dto.setPassword(password);
+            UserSignInRequestDto dto
+                    = new UserSignInRequestDto(name,lastname,email,password);
+
 
             UserController controller = new UserController();
             ResponseDto responseDto = controller.signIn(dto);
@@ -75,10 +78,11 @@ public class SignInUI {
                 UserSignInResponseDto body = (UserSignInResponseDto) responseDto.getBody();
                 CustomPrint.printGreen(responseDto.getMessage());
                 System.out.println();
-                CustomPrint.printBlue(body.getFullName() + " Hoş Geldiniz!");
+                CustomPrint.printBlue("Kayıt işleminiz başarılı şekilde tamamlanmıştır. Sayın " + body.getFullName() + ". Lütfen giriş işlemi yapınız!");
                 System.out.println();
+                return;
             }
-            //Todo return veya yönlendirme işlemleri yapılacak
+
         }
     }
 }
