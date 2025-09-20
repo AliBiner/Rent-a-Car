@@ -1,5 +1,7 @@
 package com.alibiner.UI;
 
+import com.alibiner.UI.util.CustomPrint;
+
 import java.util.Scanner;
 
 public class HomeUI {
@@ -33,7 +35,8 @@ public class HomeUI {
                     System.out.println("Uygulama Kapandı!");
                     return;
                 default:
-                    System.out.println("Hatalı veri girişi yaptınız!");
+                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                    break;
             }
         }
     }

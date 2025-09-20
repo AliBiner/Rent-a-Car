@@ -13,7 +13,7 @@ public class SignInUI {
 
     public void view(Scanner scanner){
 
-        here : while (true){
+        while (true){
             System.out.println("=========Kullanıcı Kayıt Ekranı========");
 
             System.out.println();
@@ -28,7 +28,7 @@ public class SignInUI {
                     return;
                 default:
                     CustomPrint.printRed("Hatalı veri girişi yaptınız!");
-                    break here;
+                    continue;
             }
 
             System.out.println();

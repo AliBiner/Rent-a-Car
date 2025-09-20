@@ -5,6 +5,7 @@ import com.alibiner.controller.UserController;
 import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserLoginResponseDto;
+import com.alibiner.errorMessages.ErrorCode;
 import com.alibiner.util.Regex;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.Scanner;
 public class LoginUI {
 
     public void view(Scanner scanner){
-        here : while (true){
+        while (true){
             System.out.println("=========Kullanıcı Giriş Ekranı========");
 
             System.out.println();
@@ -28,12 +29,10 @@ public class LoginUI {
                     return;
                 default:
                     CustomPrint.printRed("Hatalı veri girişi yaptınız!");
-                    break here;
+                    continue;
             }
 
             System.out.println();
-
-            //Todo - UI'da validation işlemleri
 
             System.out.print("Email*: "); //required
             String email = scanner.nextLine().trim();
@@ -56,20 +55,24 @@ public class LoginUI {
             UserController userController = new UserController();
 
             ResponseDto responseDto = userController.login(requestDto);
-            if (!responseDto.isSuccess() && responseDto.getStatusCode()==400){
+
+            if (!responseDto.isSuccess() && responseDto.getStatusCode().equals(ErrorCode.VALIDATION.getCode())){
                 ArrayList<String> errorMessages = (ArrayList<String>) responseDto.getBody();
                 for (String message : errorMessages){
                     CustomPrint.printRed(message);
                 }
-            } else if (!responseDto.isSuccess() ) {
+            } else if (!responseDto.isSuccess()) {
                CustomPrint.printRed(responseDto.getMessage());
             } else {
                 UserLoginResponseDto user = (UserLoginResponseDto) responseDto.getBody();
                 CustomPrint.printBlue("Hoş geldiniz. Sayın "+ user.getFirstName() + user.getLastName());
-                UserSession.setId(user.getId());
-                UserSession.setFirstName(user.getFirstName());
-                UserSession.setLastName(user.getLastName());
-                //Todo başarılı işlemleri yapılacak.
+
+                if (UserSession.isEmpty()) {
+                    UserSession.setSession(user.getId(),user.getFirstName(),user.getLastName());
+                }
+
+
+                //Todo yönlendir.
             }
 
         }
