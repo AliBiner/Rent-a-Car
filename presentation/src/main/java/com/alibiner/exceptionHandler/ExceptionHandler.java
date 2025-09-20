@@ -1,6 +1,12 @@
 package com.alibiner.exceptionHandler;
 
 import com.alibiner.dto.response.ResponseDto;
+import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.exceptions.DataNotInsertException;
+import com.alibiner.exceptions.user.UserAlreadyExistException;
+import com.alibiner.exceptions.user.UserNotFoundException;
+import com.alibiner.exceptions.user.UserNotMatchesException;
+import com.alibiner.exceptions.ValidationException;
 
 import java.sql.SQLException;
 
@@ -14,28 +20,42 @@ public class ExceptionHandler {
     }
 
     public ResponseDto handle(){
-        ResponseDto dto = new ResponseDto();
         try {
             throw exception;
-        }catch (IllegalArgumentException e){
-            dto.setStatusCode(400);
-            dto.setMessage(e.getMessage());
-            dto.setSuccess(false);
-        }catch (SQLException e){
-            dto.setStatusCode(500);
-            dto.setMessage(e.getMessage());
-            dto.setSuccess(false);
-        } catch (RuntimeException e){
-            dto.setStatusCode(500);
-            dto.setMessage(e.getMessage());
-            dto.setSuccess(false);
-        }
-        catch (Exception e) {
-            dto.setStatusCode(600);
-            dto.setMessage("Beklenmedik bir hata oluştu!");
-            dto.setSuccess(false);
         }
 
-        return dto;
+        // User
+        catch (ValidationException e){
+            return new ResponseDto(e.getErrorCode(),e.getMessage(),false,e.getErrorMessages());
+        }catch (UserNotFoundException e){
+            return new ResponseDto(e.getErrorCode(),e.getMessage(),false);
+        }catch (UserNotMatchesException e){
+            return new ResponseDto(e.getErrorCode(),e.getMessage(),false);
+        }
+        catch (UserAlreadyExistException e){
+            return new ResponseDto(e.getErrorCode(),e.getMessage(),false);
+        }
+
+
+        // Runtime
+        catch (IllegalArgumentException e){
+            return new ResponseDto(ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION.getCode(),e.getMessage(),false);
+        }
+
+
+        //SQL - DB
+        catch (DataNotInsertException e){
+            return new ResponseDto(ErrorCode.DATA_NOT_INSERT.getCode(), ErrorCode.DATA_NOT_INSERT.getMessage(), false);
+        }
+        catch (SQLException e){
+            return new ResponseDto(ErrorCode.SQL_EXCEPTION.getCode(), e.getMessage(),false);
+        }
+
+
+
+        // General
+        catch (Exception e) {
+            return new ResponseDto(ErrorCode.GENERAL_EXCEPTION.getCode(), ErrorCode.GENERAL_EXCEPTION.getMessage(),false);
+        }
     }
 }
