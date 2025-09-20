@@ -1,6 +1,8 @@
 package com.alibiner.repository;
 
 import com.alibiner.entity.User;
+import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.exceptions.DataNotInsertException;
 
 import java.sql.*;
 
@@ -10,7 +12,7 @@ public class UserRepository {
         this.connection = connection;
     }
 
-    public int save(User user) throws SQLException {
+    public int save(User user) throws SQLException, DataNotInsertException {
 
         String sql = """
                 INSERT INTO users(first_name,last_name,email,passwd,created_date)\s
@@ -24,7 +26,13 @@ public class UserRepository {
         ps.setString(3,user.getEmail());
         ps.setString(4,user.getPassword());
         ps.setTimestamp(5, Timestamp.valueOf(user.getCreatedDate()));
-        return ps.executeUpdate();
+
+        int result = ps.executeUpdate();
+
+        if (result==0)
+            throw new DataNotInsertException(ErrorCode.DATA_NOT_INSERT);
+
+        return result;
 
     }
 
