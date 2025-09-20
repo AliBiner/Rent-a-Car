@@ -71,7 +71,7 @@ public class LoginUI {
                     UserSession.setSession(user.getId(),user.getFirstName(),user.getLastName(),user.getRole(),user.getCustomerType());
                 }
 
-                //Todo yönlendir.
+                VehicleUI.view(scanner);
             }
 
         }

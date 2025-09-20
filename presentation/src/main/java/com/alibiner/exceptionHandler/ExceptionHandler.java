@@ -55,6 +55,7 @@ public class ExceptionHandler {
 
         // General
         catch (Exception e) {
+            e.printStackTrace();
             return new ResponseDto(ErrorCode.GENERAL_EXCEPTION.getCode(), ErrorCode.GENERAL_EXCEPTION.getMessage(),false);
         }
     }

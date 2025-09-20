@@ -1,6 +1,8 @@
 package com.alibiner.repository;
 
 import com.alibiner.entity.User;
+import com.alibiner.enums.CustomerType;
+import com.alibiner.enums.Role;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
 
@@ -26,8 +28,8 @@ public class UserRepository {
         ps.setString(3,user.getEmail());
         ps.setString(4,user.getPassword());
         ps.setTimestamp(5, Timestamp.valueOf(user.getCreatedDate()));
-        ps.setInt(6,user.getRole().ordinal());
-        ps.setInt(7,user.getCustomerType().ordinal());
+        ps.setString(6,user.getRole().name());
+        ps.setString(7,user.getCustomerType().name());
 
         int result = ps.executeUpdate();
 
@@ -75,6 +77,8 @@ public class UserRepository {
             user.setPassword(rs.getString("passwd"));
             user.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
             user.setUpdatedDate(rs.getTimestamp("updated_date").toLocalDateTime());
+            user.setRole(Role.valueOf(rs.getString("user_role")));
+            user.setCustomerType(CustomerType.valueOf(rs.getString("customer_type")));
             break;
         }
 
