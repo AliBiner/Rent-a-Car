@@ -1,37 +1,40 @@
 package com.alibiner.dto.response;
 
-public class UserLoginResponseDto {
-    private int id;
-    private String firstName;
-    private String lastName;
+import com.alibiner.enums.CustomerType;
+import com.alibiner.enums.Role;
 
-    public UserLoginResponseDto(int id, String firstName, String lastName) {
+public class UserLoginResponseDto {
+    private final int id;
+    private final String firstName;
+    private final String lastName;
+    private final Role role;
+    private final CustomerType customerType;
+
+    public UserLoginResponseDto(int id, String firstName, String lastName, Role role, CustomerType customerType) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.role = role;
+        this.customerType = customerType;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public Role getRole() {
+        return role;
+    }
+
+    public CustomerType getCustomerType() {
+        return customerType;
     }
 }

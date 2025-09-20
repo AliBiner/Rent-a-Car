@@ -1,5 +1,8 @@
 package com.alibiner.entity;
 
+import com.alibiner.enums.CustomerType;
+import com.alibiner.enums.Role;
+
 import java.time.LocalDateTime;
 
 public class User {
@@ -13,6 +16,8 @@ public class User {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 //    private LocalDateTime deletedDate;
+    private Role role;
+    private CustomerType customerType;
 
     public int getId() {
         return id;
@@ -76,4 +81,19 @@ public class User {
         return firstName + " " + lastName;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public CustomerType getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(CustomerType customerType) {
+        this.customerType = customerType;
+    }
 }

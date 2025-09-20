@@ -1,7 +1,7 @@
 package com.alibiner.exceptionHandler;
 
 import com.alibiner.dto.response.ResponseDto;
-import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
 import com.alibiner.exceptions.user.UserAlreadyExistException;
 import com.alibiner.exceptions.user.UserNotFoundException;

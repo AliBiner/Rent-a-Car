@@ -2,11 +2,10 @@ package com.alibiner.services;
 
 import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.request.UserSignInRequestDto;
-import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserLoginResponseDto;
 import com.alibiner.dto.response.UserSignInResponseDto;
 import com.alibiner.entity.User;
-import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
 import com.alibiner.exceptions.user.UserAlreadyExistException;
 import com.alibiner.exceptions.user.UserNotFoundException;
@@ -19,7 +18,6 @@ import com.alibiner.util.PasswordHashing;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class UserService {
 
@@ -71,7 +69,7 @@ public class UserService {
             throw new UserNotMatchesException(ErrorCode.USER_NOT_MATCHES);
         }
 
-        return new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName());
+        return new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName(),user.getRole(),user.getCustomerType());
     }
 
     public User getByEmail(String email) throws SQLException {

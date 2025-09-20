@@ -5,6 +5,8 @@ import com.alibiner.controller.UserController;
 import com.alibiner.dto.request.UserSignInRequestDto;
 import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserSignInResponseDto;
+import com.alibiner.enums.CustomerType;
+import com.alibiner.enums.Role;
 import com.alibiner.util.Regex;
 
 import java.util.Scanner;
@@ -65,8 +67,28 @@ public class SignInUI {
                 password = scanner.nextLine().trim();
             }
 
-            UserSignInRequestDto dto
-                    = new UserSignInRequestDto(name,lastname,email,password);
+            System.out.print("1 - Bireysel \n2 - Kurumsal*:"); // required
+            String inputCustomerType = scanner.nextLine().trim();
+
+            UserSignInRequestDto dto = null;
+
+            CustomerType customerType = null;
+            boolean loop = true;
+            while (loop){
+                switch (inputCustomerType){
+                    case "1":
+                        dto = new UserSignInRequestDto(name,lastname,email,password, Role.CUSTOMER, CustomerType.INDIVIDUAL);
+                        loop = false;
+                        break;
+                    case "2":
+                        dto = new UserSignInRequestDto(name,lastname,email,password, Role.CUSTOMER, CustomerType.INSTITUTIONAL);
+                        loop = false;
+                        break;
+                    default:
+                        CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                        break;
+                }
+            }
 
 
             UserController controller = new UserController();

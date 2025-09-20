@@ -5,7 +5,7 @@ import com.alibiner.controller.UserController;
 import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserLoginResponseDto;
-import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.util.Regex;
 
 import java.util.*;
@@ -68,9 +68,8 @@ public class LoginUI {
                 CustomPrint.printBlue("Hoş geldiniz. Sayın "+ user.getFirstName() + user.getLastName());
 
                 if (UserSession.isEmpty()) {
-                    UserSession.setSession(user.getId(),user.getFirstName(),user.getLastName());
+                    UserSession.setSession(user.getId(),user.getFirstName(),user.getLastName(),user.getRole(),user.getCustomerType());
                 }
-
 
                 //Todo yönlendir.
             }

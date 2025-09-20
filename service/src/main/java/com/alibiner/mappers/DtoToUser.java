@@ -16,6 +16,8 @@ public class DtoToUser {
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setCreatedDate(LocalDateTime.now());
+        user.setRole(dto.getRole());
+        user.setCustomerType(dto.getCustomerType());
 
         //hash
         user.setPassword(PasswordHashing.hash(dto.getPassword()));

@@ -10,12 +10,16 @@ Bu geliştirme süreci boyunca, Java ile katmanlı mimarinin inceliklerini, veri
 
 - Kimlik Doğrulama
 
-  - Giriş/Kayıt: E-posta + şifre ile yapılmalıdır.
+  - Giriş/Kayıt: E-posta + şifre ile yapılmalıdır. ✅
 
-  - Parolalar SHA-256 veya benzeri bir algoritma ile hash’lenerek saklanmalıdır.
+  - Parolalar SHA-256 veya benzeri bir algoritma ile hash’lenerek saklanmalıdır. ✅
 
 - Roller ve Yetkilendirme
-
+    
+  - Role: Admin, Customer ✅
+  
+  - Customer Type =  Individual, Institutional ✅
+  
   - ADMIN: Araç ekleme/güncelleme/silme/listeleme işlemleri (CRUD).
 
   - CUSTOMER (Bireysel/Kurumsal): Araç arama, Kiralama, İptal işlemleri.
