@@ -6,6 +6,11 @@ import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserLoginResponseDto;
 import com.alibiner.dto.response.UserSignInResponseDto;
 import com.alibiner.entity.User;
+import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.exceptions.DataNotInsertException;
+import com.alibiner.exceptions.user.UserAlreadyExistException;
+import com.alibiner.exceptions.user.UserNotFoundException;
+import com.alibiner.exceptions.user.UserNotMatchesException;
 import com.alibiner.mappers.DtoToUser;
 import com.alibiner.repository.UserRepository;
 import com.alibiner.util.MyDbConnection;
@@ -26,89 +31,47 @@ public class UserService {
         this.userRepository = new UserRepository(this.connection);
     }
 
-    public ResponseDto save(UserSignInRequestDto dto) throws SQLException, NoSuchAlgorithmException {
-
-        ResponseDto responseDto = new ResponseDto();
-
+    public UserSignInResponseDto save(UserSignInRequestDto dto) throws SQLException, NoSuchAlgorithmException, UserAlreadyExistException, DataNotInsertException {
 
         if (isAlreadyExist(dto.getEmail())) {
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Bu email adresi zaten kayıtlı!");
-            responseDto.setSuccess(false);
-            return responseDto;
+            throw new UserAlreadyExistException(ErrorCode.USER_ALREADY_EXIST);
         }
-
-        //Hash password
-        dto.setPassword(PasswordHashing.hash(dto.getPassword()));
 
         //Dto Mapping
         User user =  DtoToUser.userSignInRequestDtoTo(dto);
-        user.setCreatedDate(LocalDateTime.now());
 
-        //Insert DB
-        int resultSave = userRepository.save(user);
+        // throw exception while doesnt insert statement
+        userRepository.save(user);
 
-        //Kayıt işlemi başarısız durumu
-        if (resultSave==0){
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Veri tabanına veri kaydedilemedi!");
-            responseDto.setSuccess(false);
-            return responseDto;
-        }
 
         //Kayıt işlemi başarılı durumu
         User result = userRepository.getByEmail(dto.getEmail());
 
-        responseDto.setStatusCode(200);
-        responseDto.setMessage("Kayıt İşlemi Başarılı");
-        responseDto.setSuccess(true);
+        connection.commit();
 
         //Response Body
-        UserSignInResponseDto signInResponseDto = new UserSignInResponseDto();
-
-
-        signInResponseDto.setId(result.getId());
-        signInResponseDto.setEmail(result.getEmail());
-        signInResponseDto.setFullName(result.getFullName());
-
-        responseDto.setBody(signInResponseDto);
-        connection.commit();
-        return responseDto;
+        return new UserSignInResponseDto(result.getId(), result.getEmail(), result.getFullName());
     }
 
     public boolean isAlreadyExist(String email) throws SQLException {
         return userRepository.isAlreadyExist(email);
     }
 
-    public ResponseDto login(UserLoginRequestDto dto) throws SQLException, NoSuchAlgorithmException {
+    public UserLoginResponseDto login(UserLoginRequestDto dto) throws SQLException, NoSuchAlgorithmException, UserNotFoundException, UserNotMatchesException {
 
         User user = getByEmail(dto.getEmail());
-        ResponseDto responseDto = new ResponseDto();
+
         if (user == null){
-            responseDto.setStatusCode(404);
-            responseDto.setMessage("Bu email bilgisinde kullanıcı bulunamdı!");
-            responseDto.setSuccess(false);
-            return responseDto;
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
         String passwordHash = PasswordHashing.hash(dto.getPassword());
 
         if (!passwordHash.equals(user.getPassword())){
-            responseDto.setStatusCode(400);
-            responseDto.setMessage("Email ve ya şifre bilgisi hatalı!");
-            responseDto.setSuccess(false);
-            return responseDto;
+            throw new UserNotMatchesException(ErrorCode.USER_NOT_MATCHES);
         }
 
-
-        UserLoginResponseDto userLoginResponseDto = new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName());
-
-        responseDto.setStatusCode(200);
-        responseDto.setMessage("Kullanıcı giriş işlemi başarılı!");
-        responseDto.setSuccess(true);
-        responseDto.setBody(userLoginResponseDto);
-        return responseDto;
-
+        return new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName());
     }
 
     public User getByEmail(String email) throws SQLException {
