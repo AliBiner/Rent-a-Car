@@ -1,7 +1,7 @@
 package com.alibiner.exceptions.user;
 
-import com.alibiner.errorMessages.ErrorCode;
-import com.alibiner.errorMessages.IErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.IErrorCode;
 
 public class UserAlreadyExistException extends Exception implements IErrorCode {
     private ErrorCode errorCode;

@@ -1,7 +1,7 @@
 package com.alibiner.exceptions;
 
-import com.alibiner.errorMessages.ErrorCode;
-import com.alibiner.errorMessages.IErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.IErrorCode;
 
 import java.util.*;
 

@@ -5,7 +5,7 @@ import com.alibiner.dto.request.UserSignInRequestDto;
 import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.dto.response.UserLoginResponseDto;
 import com.alibiner.dto.response.UserSignInResponseDto;
-import com.alibiner.errorMessages.ErrorCode;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptionHandler.ExceptionHandler;
 import com.alibiner.exceptions.ValidationException;
 import com.alibiner.services.UserService;

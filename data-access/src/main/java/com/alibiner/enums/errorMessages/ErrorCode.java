@@ -1,4 +1,4 @@
-package com.alibiner.errorMessages;
+package com.alibiner.enums.errorMessages;
 
 public enum ErrorCode {
 
