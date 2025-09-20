@@ -1,40 +1,36 @@
 package com.alibiner.dto.response;
 
 public class ResponseDto implements IResponseDto{
-    private int statusCode;
-    private String message;
-    private boolean isSuccess;
-    private Object body;
+    private final String statusCode;
+    private final String message;
+    private final boolean isSuccess;
+    private final Object body;
 
-    public int getStatusCode() {
-        return statusCode;
+    public ResponseDto(String statusCode, String message, boolean isSuccess) {
+        this(statusCode,message,isSuccess,null);
     }
 
-    public void setStatusCode(int statusCode) {
+    public ResponseDto(String statusCode, String message, boolean isSuccess, Object body) {
         this.statusCode = statusCode;
+        this.message = message;
+        this.isSuccess = isSuccess;
+        this.body = body;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public boolean isSuccess() {
         return isSuccess;
-    }
-
-    public void setSuccess(boolean success) {
-        isSuccess = success;
     }
 
     public Object getBody() {
         return body;
     }
 
-    public void setBody(Object body) {
-        this.body = body;
-    }
 }
