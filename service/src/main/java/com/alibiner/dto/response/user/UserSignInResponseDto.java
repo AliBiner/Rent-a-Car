@@ -1,4 +1,4 @@
-package com.alibiner.dto.response;
+package com.alibiner.dto.response.user;
 
 public class UserSignInResponseDto{
     private int id;

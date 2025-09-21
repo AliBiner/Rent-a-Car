@@ -4,9 +4,11 @@ import com.alibiner.dto.response.ResponseDto;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
 import com.alibiner.exceptions.user.UserAlreadyExistException;
+import com.alibiner.exceptions.user.UserForbiddenException;
 import com.alibiner.exceptions.user.UserNotFoundException;
 import com.alibiner.exceptions.user.UserNotMatchesException;
 import com.alibiner.exceptions.ValidationException;
+import com.alibiner.util.MyDbConnection;
 
 import java.sql.SQLException;
 
@@ -35,7 +37,9 @@ public class ExceptionHandler {
         catch (UserAlreadyExistException e){
             return new ResponseDto(e.getErrorCode(),e.getMessage(),false);
         }
-
+        catch (UserForbiddenException e){
+            return new ResponseDto(e.getErrorCode(),e.getMessage(),false);
+        }
 
         // Runtime
         catch (IllegalArgumentException e){
@@ -57,6 +61,13 @@ public class ExceptionHandler {
         catch (Exception e) {
             e.printStackTrace();
             return new ResponseDto(ErrorCode.GENERAL_EXCEPTION.getCode(), ErrorCode.GENERAL_EXCEPTION.getMessage(),false);
+        }
+        finally {
+            try {
+                MyDbConnection.getInstance().getConnection().rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

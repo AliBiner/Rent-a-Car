@@ -1,4 +1,4 @@
-package com.alibiner.dto.response;
+package com.alibiner.dto.response.user;
 
 import com.alibiner.enums.CustomerType;
 import com.alibiner.enums.Role;

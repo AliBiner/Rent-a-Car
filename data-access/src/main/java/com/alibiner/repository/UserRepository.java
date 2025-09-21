@@ -66,6 +66,25 @@ public class UserRepository {
 
         ResultSet rs = ps.executeQuery();
 
+        return setUser(rs);
+    }
+
+    public User getById(int id) throws SQLException {
+        String sql = """
+                SELECT * FROM users
+                WHERE id = ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+
+        ps.setInt(1,id);
+
+        ResultSet resultSet = ps.executeQuery();
+
+        return setUser(resultSet);
+    }
+
+    private User setUser(ResultSet rs) throws SQLException {
         User user = null;
         while (rs.next()){
             user = new User();
@@ -81,7 +100,7 @@ public class UserRepository {
             user.setCustomerType(CustomerType.valueOf(rs.getString("customer_type")));
             break;
         }
-
         return user;
     }
+
 }

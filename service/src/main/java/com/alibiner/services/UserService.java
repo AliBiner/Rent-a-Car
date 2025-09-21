@@ -2,9 +2,10 @@ package com.alibiner.services;
 
 import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.request.UserSignInRequestDto;
-import com.alibiner.dto.response.UserLoginResponseDto;
-import com.alibiner.dto.response.UserSignInResponseDto;
+import com.alibiner.dto.response.user.UserLoginResponseDto;
+import com.alibiner.dto.response.user.UserSignInResponseDto;
 import com.alibiner.entity.User;
+import com.alibiner.enums.Role;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
 import com.alibiner.exceptions.user.UserAlreadyExistException;
@@ -74,5 +75,17 @@ public class UserService {
 
     public User getByEmail(String email) throws SQLException {
         return userRepository.getByEmail(email);
+    }
+
+    public boolean isAdmin(int id) throws SQLException, UserNotFoundException {
+        User user = userRepository.getById(id);
+        if (user == null){
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (user.getRole().equals(Role.ADMIN)){
+            return true;
+        }
+        return false;
     }
 }

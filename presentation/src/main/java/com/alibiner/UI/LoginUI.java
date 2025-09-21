@@ -4,7 +4,7 @@ import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.controller.UserController;
 import com.alibiner.dto.request.UserLoginRequestDto;
 import com.alibiner.dto.response.ResponseDto;
-import com.alibiner.dto.response.UserLoginResponseDto;
+import com.alibiner.dto.response.user.UserLoginResponseDto;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.util.Regex;
 

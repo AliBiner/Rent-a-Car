@@ -3,13 +3,18 @@ package com.alibiner.UI;
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.controller.CarController;
 import com.alibiner.dto.request.car.CarAddRequestDTO;
+import com.alibiner.dto.response.ResponseDto;
+import com.alibiner.dto.response.car.CarAddResponseDTO;
 import com.alibiner.enums.Role;
 import com.alibiner.enums.car.MachineType;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.util.Regex;
 
 import javax.swing.text.DateFormatter;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -114,6 +119,24 @@ public class CarAddUI {
 
         CarAddRequestDTO dto = new CarAddRequestDTO(brand,model,doorCount,machineType,productionYear,UserSession.getId());
         CarController carController = new CarController();
-        carController.addCar(dto);
+
+        ResponseDto responseDto = carController.addCar(dto);
+
+        if (!responseDto.isSuccess() && responseDto.getStatusCode().equals(ErrorCode.VALIDATION.getCode())){
+            if (responseDto.getBody() instanceof ArrayList<?>){
+                ArrayList<String> errorMessages = (ArrayList<String>) responseDto.getBody();
+                for (String message : errorMessages){
+                    CustomPrint.printRed(message);
+                }
+            }
+        } else if (!responseDto.isSuccess()) {
+            CustomPrint.printRed(responseDto.getMessage());
+        }else {
+            if (responseDto.getBody() instanceof CarAddResponseDTO){
+                CarAddResponseDTO resultDto = (CarAddResponseDTO) responseDto.getBody();
+                CustomPrint.printGreen(responseDto.getMessage());
+                CustomPrint.printGreen(resultDto.getBrand());
+            }
+        }
     }
 }
