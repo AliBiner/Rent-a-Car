@@ -1,8 +1,9 @@
-package com.alibiner.dto.request.car;
+package com.alibiner.dto.request.vehicle.car;
 
+import com.alibiner.dto.request.vehicle.IVehicleRequestDto;
 import com.alibiner.enums.car.MachineType;
 
-public class CarAddRequestDTO {
+public class CarAddRequestDTO implements IVehicleRequestDto {
     private final String brand;
     private final String model;
     private final int doorCount;

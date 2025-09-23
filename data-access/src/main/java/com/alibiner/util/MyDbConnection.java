@@ -16,7 +16,8 @@ public class MyDbConnection {
             this.connection = DriverManager.getConnection(db_url,db_user,db_password);
             this.connection.setAutoCommit(false);
         } catch (SQLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println("Hata MyDbConnection()");
         }
 
     }
@@ -29,12 +30,14 @@ public class MyDbConnection {
         try{
             if (instance == null){
                 instance = new MyDbConnection();
-            } else if (instance.connection.isClosed()) {
-                instance = new MyDbConnection();
+            }
+            if (instance.connection!=null){
+                if (instance.connection.isClosed())
+                    instance = new MyDbConnection();
             }
             return instance;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Hata getInstance()");
         }
         return instance;
     }

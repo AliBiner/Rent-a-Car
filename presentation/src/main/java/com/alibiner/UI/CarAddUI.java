@@ -2,20 +2,14 @@ package com.alibiner.UI;
 
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.controller.CarController;
-import com.alibiner.dto.request.car.CarAddRequestDTO;
+import com.alibiner.dto.request.vehicle.car.CarAddRequestDTO;
 import com.alibiner.dto.response.ResponseDto;
-import com.alibiner.dto.response.car.CarAddResponseDTO;
+import com.alibiner.dto.response.vehicle.car.CarAddResponseDTO;
 import com.alibiner.enums.Role;
 import com.alibiner.enums.car.MachineType;
 import com.alibiner.enums.errorMessages.ErrorCode;
-import com.alibiner.util.Regex;
 
-import javax.swing.text.DateFormatter;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
-import java.text.DateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class CarAddUI {
@@ -132,11 +126,7 @@ public class CarAddUI {
         } else if (!responseDto.isSuccess()) {
             CustomPrint.printRed(responseDto.getMessage());
         }else {
-            if (responseDto.getBody() instanceof CarAddResponseDTO){
-                CarAddResponseDTO resultDto = (CarAddResponseDTO) responseDto.getBody();
-                CustomPrint.printGreen(responseDto.getMessage());
-                CustomPrint.printGreen(resultDto.getBrand());
-            }
+            CustomPrint.printGreen(responseDto.getMessage());
         }
     }
 }

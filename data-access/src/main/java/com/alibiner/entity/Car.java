@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class Car extends Vehicle {
     private final int doorCount;
     private final MachineType machineType;
-    private final String productionYear;
+    private final String productionYear; //Todo - parent'a taşınacak
 
     public Car(int id, String brand, String model, boolean isRent, LocalDateTime createdDate, LocalDateTime updatedDate, int atCreatedId, User atCreated, int atUpdatedId, User atUpdated, int doorCount, MachineType machineType, String productionYear) {
         super(id, brand, model, isRent, createdDate, updatedDate, atCreatedId, atCreated, atUpdatedId, atUpdated);

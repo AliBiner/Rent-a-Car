@@ -1,6 +1,6 @@
 package com.alibiner.validations;
 
-import com.alibiner.dto.request.car.CarAddRequestDTO;
+import com.alibiner.dto.request.vehicle.car.CarAddRequestDTO;
 
 import java.util.ArrayList;
 

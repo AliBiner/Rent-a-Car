@@ -9,6 +9,7 @@ import com.alibiner.exceptions.user.UserNotFoundException;
 import com.alibiner.exceptions.user.UserNotMatchesException;
 import com.alibiner.exceptions.ValidationException;
 import com.alibiner.util.MyDbConnection;
+import org.postgresql.util.PSQLException;
 
 import java.sql.SQLException;
 
@@ -51,11 +52,19 @@ public class ExceptionHandler {
         catch (DataNotInsertException e){
             return new ResponseDto(ErrorCode.DATA_NOT_INSERT.getCode(), ErrorCode.DATA_NOT_INSERT.getMessage(), false);
         }
+        catch (PSQLException e){
+            e.printStackTrace();
+            return new ResponseDto(ErrorCode.SQL_EXCEPTION.getCode(), e.getMessage(),false);
+        }
         catch (SQLException e){
             return new ResponseDto(ErrorCode.SQL_EXCEPTION.getCode(), e.getMessage(),false);
         }
 
 
+        catch (NullPointerException e){
+            System.out.println("Hata oldu!");
+            return new ResponseDto("Null -400","Null pointer",false);
+        }
 
         // General
         catch (Exception e) {
@@ -64,7 +73,8 @@ public class ExceptionHandler {
         }
         finally {
             try {
-                MyDbConnection.getInstance().getConnection().rollback();
+                if (MyDbConnection.getInstance() == null)
+                    MyDbConnection.getInstance().getConnection().rollback();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
