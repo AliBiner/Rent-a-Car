@@ -5,15 +5,18 @@ import com.alibiner.enums.CustomerType;
 import com.alibiner.enums.Role;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
+import com.alibiner.repository.interfaces.ICRUDRepository;
 
 import java.sql.*;
+import java.util.List;
 
-public class UserRepository {
+public class UserRepository implements ICRUDRepository<User> {
     private final Connection connection;
     public UserRepository(Connection connection) {
         this.connection = connection;
     }
 
+    @Override
     public int save(User user) throws SQLException, DataNotInsertException {
 
         String sql = """
@@ -38,6 +41,37 @@ public class UserRepository {
 
         return result;
 
+    }
+
+    @Override
+    public User update(User entity) {
+        return null;
+    }
+
+    @Override
+    public void delete(int id) {
+
+    }
+
+    @Override
+    public List<User> getAll() {
+        return List.of();
+    }
+
+    @Override
+    public User getById(int id) throws SQLException {
+        String sql = """
+                SELECT * FROM users
+                WHERE id = ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+
+        ps.setInt(1,id);
+
+        ResultSet resultSet = ps.executeQuery();
+
+        return setUser(resultSet);
     }
 
     public boolean isAlreadyExist(String email) throws SQLException {
@@ -69,35 +103,18 @@ public class UserRepository {
         return setUser(rs);
     }
 
-    public User getById(int id) throws SQLException {
-        String sql = """
-                SELECT * FROM users
-                WHERE id = ?
-                """;
-
-        PreparedStatement ps = connection.prepareStatement(sql);
-
-        ps.setInt(1,id);
-
-        ResultSet resultSet = ps.executeQuery();
-
-        return setUser(resultSet);
-    }
-
     private User setUser(ResultSet rs) throws SQLException {
         User user = null;
         while (rs.next()){
-            user = new User();
-
-            user.setId(rs.getInt("id"));
-            user.setFirstName(rs.getString("first_name"));
-            user.setLastName(rs.getString("last_name"));
-            user.setEmail(rs.getString("email"));
-            user.setPassword(rs.getString("passwd"));
-            user.setCreatedDate(rs.getTimestamp("created_date").toLocalDateTime());
-            user.setUpdatedDate(rs.getTimestamp("updated_date").toLocalDateTime());
-            user.setRole(Role.valueOf(rs.getString("user_role")));
-            user.setCustomerType(CustomerType.valueOf(rs.getString("customer_type")));
+            user = new User(rs.getInt("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email"),
+                    rs.getString("passwd"),
+                    rs.getTimestamp("created_date").toLocalDateTime(),
+                    rs.getTimestamp("updated_date").toLocalDateTime(),
+                    Role.valueOf(rs.getString("user_role")),
+                    CustomerType.valueOf(rs.getString("customer_type")));
             break;
         }
         return user;

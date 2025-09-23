@@ -31,6 +31,8 @@ public class CarUI {
                 case "1":
                     CarAddUI.view(scanner);
                     break;
+                case "2":
+
                     //Todo- diğer adımları yap
                 case "0":
                     return;

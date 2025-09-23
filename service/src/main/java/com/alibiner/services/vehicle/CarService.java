@@ -40,7 +40,7 @@ public class CarService implements IVehicleCRUDService {
 
         Car car = DtoToCar.carAddRequestDtoTo(castDto);
 
-        carRepository.save(car);
+        int result = carRepository.save(car);
 
         connection.commit();
 

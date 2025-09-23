@@ -4,20 +4,22 @@ import com.alibiner.entity.Car;
 import com.alibiner.entity.Vehicle;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptions.DataNotInsertException;
+import com.alibiner.repository.interfaces.ICRUDRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 
-public class CarRepository {
+public class CarRepository implements ICRUDRepository<Car> {
     private Connection connection;
     public CarRepository(Connection connection) {
         this.connection = connection;
     }
 
+    @Override
     public int save(Car vehicle) throws SQLException, DataNotInsertException {
-
         String sql = """
                 INSERT INTO car(
                 brand,
@@ -51,4 +53,26 @@ public class CarRepository {
             throw new DataNotInsertException(ErrorCode.DATA_NOT_INSERT);
         return result;
     }
+
+    @Override
+    public Car update(Car entity) {
+        return null;
+    }
+
+    @Override
+    public void delete(int id) {
+
+    }
+
+    @Override
+    public List<Car> getAll() {
+        return List.of();
+    }
+
+    @Override
+    public Car getById(int id) {
+        return null;
+    }
+
+
 }

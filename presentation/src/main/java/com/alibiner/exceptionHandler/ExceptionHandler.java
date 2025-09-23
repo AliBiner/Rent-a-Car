@@ -73,7 +73,7 @@ public class ExceptionHandler {
         }
         finally {
             try {
-                if (MyDbConnection.getInstance() == null)
+                if (MyDbConnection.getInstance() == null && MyDbConnection.getInstance().getConnection()!=null)
                     MyDbConnection.getInstance().getConnection().rollback();
             } catch (SQLException e) {
                 e.printStackTrace();

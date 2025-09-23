@@ -2,8 +2,7 @@ package com.alibiner.entity;
 
 import java.time.LocalDateTime;
 
-public class Vehicle {
-    private final int id;
+public class Vehicle extends BaseEntity {
     private final String brand;
     private final String model;
     private final boolean isRent;
@@ -15,7 +14,7 @@ public class Vehicle {
     private final User atUpdated;
 
     public Vehicle(int id, String brand, String model, boolean isRent, LocalDateTime createdDate, LocalDateTime updatedDate, int atCreatedId, User atCreated, int atUpdatedId, User atUpdated) {
-        this.id = id;
+        super(id);
         this.brand = brand;
         this.model = model;
         this.isRent = isRent;
@@ -25,10 +24,6 @@ public class Vehicle {
         this.atCreated = atCreated;
         this.atUpdatedId = atUpdatedId;
         this.atUpdated = atUpdated;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getBrand() {

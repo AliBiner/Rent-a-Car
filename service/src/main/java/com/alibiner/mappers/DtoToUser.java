@@ -10,17 +10,18 @@ import java.time.LocalDateTime;
 public class DtoToUser {
 
     public static User userSignInRequestDtoTo(UserSignInRequestDto dto) throws NoSuchAlgorithmException {
-        User user = new User();
 
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setCreatedDate(LocalDateTime.now());
-        user.setRole(dto.getRole());
-        user.setCustomerType(dto.getCustomerType());
+        String hashPass = PasswordHashing.hash(dto.getPassword());
 
-        //hash
-        user.setPassword(PasswordHashing.hash(dto.getPassword()));
+        User user = new User(dto.getFirstName(),
+                dto.getLastName(),
+                dto.getEmail(),
+                hashPass,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                dto.getRole(),
+                dto.getCustomerType()
+                );
 
         return user;
     }

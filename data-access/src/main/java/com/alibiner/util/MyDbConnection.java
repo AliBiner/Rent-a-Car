@@ -16,8 +16,7 @@ public class MyDbConnection {
             this.connection = DriverManager.getConnection(db_url,db_user,db_password);
             this.connection.setAutoCommit(false);
         } catch (SQLException e) {
-//            e.printStackTrace();
-            System.out.println("Hata MyDbConnection()");
+            System.out.println("Db bağlantısı kurulamadı!");
         }
 
     }
@@ -37,7 +36,7 @@ public class MyDbConnection {
             }
             return instance;
         } catch (SQLException e) {
-            System.out.println("Hata getInstance()");
+            System.out.println("Db bağlantısı kurulamadı!");
         }
         return instance;
     }
