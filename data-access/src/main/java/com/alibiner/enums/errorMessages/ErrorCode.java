@@ -9,9 +9,13 @@ public enum ErrorCode {
     ILLEGAL_ARGUMENT_EXCEPTION("ILLEGAL-ARGUMENT-400","Hatalı argüman!"),
     SQL_EXCEPTION("DB-SQL-500","Db hatası!"),
     DATA_NOT_INSERT("DB-501","Veri kaydedilemedi!"),
+    DATA_NOT_UPDATE("DB-502","Veri Güncellenemedi"),
+    DATA_NOT_DELETE("DB-503","Veri Silinemedi!"),
     GENERAL_EXCEPTION("GENERAL-600","Beklenmedik bir hata oluştu!"),
     OK("200","İşlem Başarılı!"),
-    FORBIDDEN("USER-403","Bu işlemi yapmak için yetkiniz bulunmamaktadır!");
+    FORBIDDEN("USER-403","Bu işlemi yapmak için yetkiniz bulunmamaktadır!"),
+    NOT_FOUND("DB-400","Mevcut kayıt bulunmadı!")
+    ;
 
     private String code;
     private String message;
