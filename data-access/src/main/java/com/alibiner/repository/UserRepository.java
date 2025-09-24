@@ -10,13 +10,13 @@ import com.alibiner.repository.interfaces.ICRUDRepository;
 import java.sql.*;
 import java.util.List;
 
-public class UserRepository implements ICRUDRepository<User> {
+public class UserRepository {
     private final Connection connection;
     public UserRepository(Connection connection) {
         this.connection = connection;
     }
 
-    @Override
+
     public int save(User user) throws SQLException, DataNotInsertException {
 
         String sql = """
@@ -42,23 +42,6 @@ public class UserRepository implements ICRUDRepository<User> {
         return result;
 
     }
-
-    @Override
-    public User update(User entity) {
-        return null;
-    }
-
-    @Override
-    public void delete(int id) {
-
-    }
-
-    @Override
-    public List<User> getAll() {
-        return List.of();
-    }
-
-    @Override
     public User getById(int id) throws SQLException {
         String sql = """
                 SELECT * FROM users
