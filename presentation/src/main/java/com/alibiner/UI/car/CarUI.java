@@ -1,5 +1,6 @@
-package com.alibiner.UI;
+package com.alibiner.UI.car;
 
+import com.alibiner.UI.UserSession;
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.enums.Role;
 
@@ -20,9 +21,9 @@ public class CarUI {
             System.out.println("==============Otomobil İşlemleri===============");
             System.out.println();
             System.out.println("1 - Otomobil Ekleme");
-            System.out.println("2 - Otomobil Güncelleme");
-            System.out.println("3 - Otomobil Silme");
-            System.out.println("4 - Otomobil Listeleme");
+//            System.out.println("2 - Otomobil Güncelleme");
+//            System.out.println("3 - Otomobil Silme");
+            System.out.println("2 - Otomobil Listeleme");
             System.out.println("0 - Bir Üst Menü");
             System.out.print("Seçiminiz: ");
             String choice = scanner.nextLine();
@@ -32,8 +33,8 @@ public class CarUI {
                     CarAddUI.view(scanner);
                     break;
                 case "2":
-
-                    //Todo- diğer adımları yap
+                    CarListUI.view(scanner);
+                    break;
                 case "0":
                     return;
                 default:
