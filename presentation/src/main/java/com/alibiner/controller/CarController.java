@@ -55,7 +55,6 @@ public class CarController {
     public ResponseDto getById(int id) {
         try {
             AdminGetCarResponseDto result = (AdminGetCarResponseDto) carService.getById(id);
-
             return new ResponseDto("200","İşlem Başarılı!",true,result);
 
         } catch (Exception e) {
