@@ -19,13 +19,14 @@ public class LoginUI {
 
             System.out.println();
             System.out.println("1 - Giriş İşlemi");
-            System.out.println("0 - Bir Üst Menü");
+            System.out.println("0 - Bir Üst Menü Dön ve Oturumu Kapat");
             System.out.print("Seçiminiz: ");
             String choice = scanner.nextLine();
             switch (choice){
                 case "1":
                     break;
                 case "0":
+                    UserSession.clear();
                     return;
                 default:
                     CustomPrint.printRed("Hatalı veri girişi yaptınız!");
