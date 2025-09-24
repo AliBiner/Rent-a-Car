@@ -1,4 +1,4 @@
-package com.alibiner.mappers;
+package com.alibiner.mappers.car;
 
 import com.alibiner.dto.response.vehicle.car.AdminGetCarResponseDto;
 import com.alibiner.entity.Car;
