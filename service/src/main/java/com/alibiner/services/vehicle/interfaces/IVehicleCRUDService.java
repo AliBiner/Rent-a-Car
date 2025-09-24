@@ -12,7 +12,7 @@ import java.util.*;
 
 public interface IVehicleCRUDService {
     boolean save(IVehicleRequestDto dto) throws UserForbiddenException, UserNotFoundException, SQLException, DataNotInsertException;
-    IVehicleResponseDto getById(int id) throws SQLException;
+    IVehicleResponseDto getById(int id) throws SQLException, NotFoundException;
     List<IVehicleResponseDto> getAll(int adminId) throws UserForbiddenException, UserNotFoundException, SQLException;
     boolean update(IVehicleRequestDto vehicle) throws SQLException, NotFoundException, UserForbiddenException, UserNotFoundException;
     boolean delete(int id, int userId) throws UserForbiddenException, UserNotFoundException, SQLException;

@@ -1,7 +1,9 @@
 package com.alibiner.UI;
 
 import com.alibiner.UI.car.CarUI;
+import com.alibiner.UI.helicopter.HelicopterUI;
 import com.alibiner.UI.util.CustomPrint;
+import com.alibiner.entity.Helicopter;
 import com.alibiner.enums.Role;
 
 import java.util.Scanner;
@@ -61,10 +63,9 @@ public class VehicleUI {
             switch (choice){
                 case "1":
                     CarUI.view(scanner);
-                    //Todo - Otomobil ekranı
                     break;
                 case "2":
-                    // Todo - Helikoper ekranı
+                    HelicopterUI.view(scanner);
                     break;
                 case "3":
                     //Todo - motosiklet ekranı
