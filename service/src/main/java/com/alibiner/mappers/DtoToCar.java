@@ -1,6 +1,7 @@
 package com.alibiner.mappers;
 
 import com.alibiner.dto.request.vehicle.car.CarAddRequestDTO;
+import com.alibiner.dto.request.vehicle.car.CarUpdateRequestDto;
 import com.alibiner.entity.Car;
 
 import java.time.LocalDateTime;
