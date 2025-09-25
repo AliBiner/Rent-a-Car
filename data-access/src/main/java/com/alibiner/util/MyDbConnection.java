@@ -40,4 +40,10 @@ public class MyDbConnection {
         }
         return instance;
     }
+
+    public static void commit() throws SQLException {
+        if (MyDbConnection.getInstance().getConnection()!=null){
+            MyDbConnection.getInstance().getConnection().commit();
+        }
+    }
 }
