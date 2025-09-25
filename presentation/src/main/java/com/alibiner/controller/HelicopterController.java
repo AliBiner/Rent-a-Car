@@ -64,7 +64,6 @@ public class HelicopterController {
 
     public ResponseDto update(HelicopterUpdateRequestDto requestDto) {
         try {
-            //Todo - burada kaldık.
             List<String> errorMessages = HelicopterValidation.AddRequestDto.validate(requestDto);
             if (!errorMessages.isEmpty())
                 throw new ValidationException(ErrorCode.VALIDATION,errorMessages);
