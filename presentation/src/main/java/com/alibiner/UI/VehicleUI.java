@@ -1,9 +1,8 @@
 package com.alibiner.UI;
 
-import com.alibiner.UI.car.CarUI;
-import com.alibiner.UI.helicopter.HelicopterUI;
+import com.alibiner.UI.customer.CustomerHomeUI;
+import com.alibiner.UI.vehicle.admin.AdminVehicleUI;
 import com.alibiner.UI.util.CustomPrint;
-import com.alibiner.entity.Helicopter;
 import com.alibiner.enums.Role;
 
 import java.util.Scanner;
@@ -53,22 +52,14 @@ public class VehicleUI {
             System.out.println();
             System.out.println("==============Araç İşlemleri===============");
             System.out.println();
-            System.out.println("1 - Otomobil İşlemleri");
-            System.out.println("2 - Helikopter İşlemleri");
-            System.out.println("3 - Motosiklet İşlemleri");
+            System.out.println("1 - Araç İşlemleri");
             System.out.println("0 - Üst Menü");
             System.out.print("Seçiminiz: ");
             String choice = scanner.nextLine();
 
             switch (choice){
                 case "1":
-                    CarUI.view(scanner);
-                    break;
-                case "2":
-                    HelicopterUI.view(scanner);
-                    break;
-                case "3":
-                    //Todo - motosiklet ekranı
+                    AdminVehicleUI.view(scanner);
                     break;
                 case "0":
                     return;
@@ -82,8 +73,6 @@ public class VehicleUI {
 
 
     private static void customerUI(Scanner scanner){
-
-        //Todo - sonra yapılacak
-
+        CustomerHomeUI.view(scanner);
     }
 }

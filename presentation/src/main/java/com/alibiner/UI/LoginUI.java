@@ -2,11 +2,10 @@ package com.alibiner.UI;
 
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.controller.UserController;
-import com.alibiner.dto.request.UserLoginRequestDto;
-import com.alibiner.dto.response.ResponseDto;
-import com.alibiner.dto.response.user.UserLoginResponseDto;
 import com.alibiner.enums.errorMessages.ErrorCode;
+import com.alibiner.serviceDto.response.user.UserServiceDto;
 import com.alibiner.util.Regex;
+import com.alibiner.util.ResponseEntity;
 
 import java.util.*;
 import java.util.Scanner;
@@ -51,25 +50,20 @@ public class LoginUI {
                 password = scanner.nextLine().trim();
             }
 
-            UserLoginRequestDto requestDto = new UserLoginRequestDto(email,password);
 
             UserController userController = new UserController();
 
-            ResponseDto responseDto = userController.login(requestDto);
+            ResponseEntity<UserServiceDto> login = userController.login(email, password);
 
-            if (!responseDto.isSuccess() && responseDto.getStatusCode().equals(ErrorCode.VALIDATION.getCode())){
-                ArrayList<String> errorMessages = (ArrayList<String>) responseDto.getBody();
-                for (String message : errorMessages){
-                    CustomPrint.printRed(message);
-                }
-            } else if (!responseDto.isSuccess()) {
-               CustomPrint.printRed(responseDto.getMessage());
-            } else {
-                UserLoginResponseDto user = (UserLoginResponseDto) responseDto.getBody();
-                CustomPrint.printBlue("Hoş geldiniz. Sayın "+ user.getFirstName() + user.getLastName());
+
+            if (login.getData() == null){
+               CustomPrint.printRed(login.getMessage());
+            }
+            else {
+                CustomPrint.printBlue("Hoş geldiniz. Sayın "+ login.getData().firstName() + " " + login.getData().lastName());
 
                 if (UserSession.isEmpty()) {
-                    UserSession.setSession(user.getId(),user.getFirstName(),user.getLastName(),user.getRole(),user.getCustomerType());
+                    UserSession.setSession(login.getData().id(),login.getData().firstName(),login.getData().lastName(),login.getData().role(),login.getData().customerType());
                 }
 
                 VehicleUI.view(scanner);

@@ -13,6 +13,7 @@
         <module>presentation</module>
         <module>service</module>
         <module>data-access</module>
+        <module>core</module>
     </modules>
 
     <properties>

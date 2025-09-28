@@ -27,7 +27,7 @@ public class MyDbConnection {
 
     public static MyDbConnection getInstance(){
         try{
-            if (instance == null){
+            if (instance == null || instance.connection==null){
                 instance = new MyDbConnection();
             }
             if (instance.connection!=null){
@@ -44,6 +44,12 @@ public class MyDbConnection {
     public static void commit() throws SQLException {
         if (MyDbConnection.getInstance().getConnection()!=null){
             MyDbConnection.getInstance().getConnection().commit();
+        }
+    }
+
+    public static void rollback() throws SQLException {
+        if (MyDbConnection.getInstance().getConnection()!=null){
+            MyDbConnection.getInstance().getConnection().rollback();
         }
     }
 }

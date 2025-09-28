@@ -1,91 +1,92 @@
 package com.alibiner.services;
 
-import com.alibiner.dto.request.UserLoginRequestDto;
-import com.alibiner.dto.request.UserSignInRequestDto;
-import com.alibiner.dto.response.user.UserLoginResponseDto;
-import com.alibiner.dto.response.user.UserSignInResponseDto;
-import com.alibiner.entity.User;
-import com.alibiner.enums.Role;
+import com.alibiner.interfaces.mapper.IUserMapper;
+import com.alibiner.interfaces.repository.IUserRepository;
+import com.alibiner.interfaces.service.IUserService;
+import com.alibiner.interfaces.unitOfWork.IUnitOfWork;
+import com.alibiner.repositoryDto.request.user.UserCreatePersistenceDto;
+import com.alibiner.repositoryDto.response.user.UserResponsePersistenceDto;
+import com.alibiner.serviceDto.request.user.UserAddServiceDto;
+import com.alibiner.serviceDto.response.user.UserServiceDto;
 import com.alibiner.enums.errorMessages.ErrorCode;
-import com.alibiner.exceptions.DataNotInsertException;
 import com.alibiner.exceptions.user.UserAlreadyExistException;
 import com.alibiner.exceptions.user.UserNotFoundException;
 import com.alibiner.exceptions.user.UserNotMatchesException;
-import com.alibiner.mappers.DtoToUser;
-import com.alibiner.repository.UserRepository;
-import com.alibiner.util.MyDbConnection;
 import com.alibiner.util.PasswordHashing;
 
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
-public class UserService {
+public class UserService implements IUserService {
 
-    UserRepository userRepository;
-    Connection connection;
+    private final IUserRepository userRepository;
+    private final IUnitOfWork unitOfWork;
+    private final IUserMapper userMapper;
 
-    public UserService() {
-        this.connection = MyDbConnection.getInstance().getConnection();
-        this.userRepository = new UserRepository(this.connection);
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IUserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.unitOfWork = unitOfWork;
+        this.userMapper = userMapper;
     }
 
-    public UserSignInResponseDto save(UserSignInRequestDto dto) throws SQLException, NoSuchAlgorithmException, UserAlreadyExistException, DataNotInsertException {
-
-        if (isAlreadyExist(dto.getEmail())) {
+    @Override
+    public boolean create(UserAddServiceDto dto) throws SQLException, UserAlreadyExistException, NoSuchAlgorithmException {
+        if (isAlreadyExist(dto.email()))
             throw new UserAlreadyExistException(ErrorCode.USER_ALREADY_EXIST);
+
+        UserCreatePersistenceDto createDto = userMapper.toUserCreateDto(dto);
+
+        int result = userRepository.create(createDto);
+        if (result<=0){
+            unitOfWork.rollback();
+            return false;
         }
 
-        //Dto Mapping
-        User user =  DtoToUser.userSignInRequestDtoTo(dto);
-
-        // throw exception while doesnt insert statement
-        userRepository.save(user);
-
-
-        //Kayıt işlemi başarılı durumu
-        User result = userRepository.getByEmail(dto.getEmail());
-
-        connection.commit();
-
-        //Response Body
-        return new UserSignInResponseDto(result.getId(), result.getEmail(), result.getFullName());
+        unitOfWork.commit();
+        return true;
     }
 
-    public boolean isAlreadyExist(String email) throws SQLException {
-        return userRepository.isAlreadyExist(email);
-    }
-
-    public UserLoginResponseDto login(UserLoginRequestDto dto) throws SQLException, NoSuchAlgorithmException, UserNotFoundException, UserNotMatchesException {
-
-        User user = getByEmail(dto.getEmail());
-
-        if (user == null){
+    @Override
+    public UserServiceDto login(String email, String password) throws SQLException, UserNotFoundException, NoSuchAlgorithmException, UserNotMatchesException {
+        UserResponsePersistenceDto userResponsePersistenceDto = userRepository.getByEmail(email);
+        if (userResponsePersistenceDto == null){
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
 
-        String passwordHash = PasswordHashing.hash(dto.getPassword());
+        String passwordHash = PasswordHashing.hash(password);
 
-        if (!passwordHash.equals(user.getPassword())){
+        if (!passwordHash.equals(userResponsePersistenceDto.password())){
             throw new UserNotMatchesException(ErrorCode.USER_NOT_MATCHES);
         }
 
-        return new UserLoginResponseDto(user.getId(), user.getFirstName(), user.getLastName(),user.getRole(),user.getCustomerType());
+        return userMapper.toUserDto(userResponsePersistenceDto);
     }
 
-    public User getByEmail(String email) throws SQLException {
-        return userRepository.getByEmail(email);
-    }
+    @Override
+    public UserServiceDto getByEmail(String email) throws SQLException, UserNotFoundException {
+        UserResponsePersistenceDto dto = userRepository.getByEmail(email);
 
-    public boolean isAdmin(int id) throws SQLException, UserNotFoundException {
-        User user = userRepository.getById(id);
-        if (user == null){
+        if (dto==null)
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
-        }
 
-        if (user.getRole().equals(Role.ADMIN)){
-            return true;
-        }
-        return false;
+        return userMapper.toUserDto(dto);
+    }
+
+    @Override
+    public UserServiceDto getById(int id) throws SQLException, UserNotFoundException {
+        if (id<=0)
+            throw new IllegalArgumentException("Id 0'dan küçük olamaz!");
+
+        UserResponsePersistenceDto userResponsePersistenceDto = userRepository.getById(id);
+
+        if (userResponsePersistenceDto==null)
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
+
+        return userMapper.toUserDto(userResponsePersistenceDto);
+    }
+
+    private boolean isAlreadyExist(String email) throws SQLException {
+        UserResponsePersistenceDto responseDto = userRepository.getByEmail(email);
+        return responseDto != null;
     }
 }

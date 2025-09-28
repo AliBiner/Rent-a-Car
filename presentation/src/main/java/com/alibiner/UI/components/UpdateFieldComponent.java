@@ -3,7 +3,6 @@ package com.alibiner.UI.components;
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.enums.car.MachineType;
 
-import javax.crypto.Mac;
 import java.util.Scanner;
 
 public class UpdateFieldComponent {
@@ -35,6 +34,26 @@ public class UpdateFieldComponent {
             try{
                 int newValue = Integer.parseInt(input);
                 if (newValue == fieldValue || newValue == 0)
+                    return fieldValue;
+                else
+                    return newValue;
+            }catch (Exception e){
+                CustomPrint.printRed("Hatalı veri girişi!");
+                return fieldValue;
+            }
+        }
+    }
+
+    public static float updateFloat(String fieldName, float fieldValue){
+        System.out.println("Güncellemek istemiyorsanız Enter tuşuna basınız!");
+        System.out.print(fieldName + "(" + fieldValue + ") : ");
+        String input = scanner.nextLine();
+        if (input.isBlank()){
+            return fieldValue;
+        }else {
+            try{
+                float newValue = Float.parseFloat(input);
+                if (newValue == fieldValue || newValue == 0.00f)
                     return fieldValue;
                 else
                     return newValue;
