@@ -2,12 +2,11 @@ package com.alibiner.UI;
 
 import com.alibiner.UI.util.CustomPrint;
 import com.alibiner.controller.UserController;
-import com.alibiner.dto.request.UserSignInRequestDto;
-import com.alibiner.dto.response.ResponseDto;
-import com.alibiner.dto.response.user.UserSignInResponseDto;
+import com.alibiner.serviceDto.request.user.UserAddServiceDto;
 import com.alibiner.enums.CustomerType;
 import com.alibiner.enums.Role;
 import com.alibiner.util.Regex;
+import com.alibiner.util.ResponseEntity;
 
 import java.util.Scanner;
 
@@ -51,6 +50,18 @@ public class SignInUI {
                 lastname = scanner.nextLine().trim();
             }
 
+            int age = 0;
+            while (age < 18){
+                try{
+                    System.out.print("Yaşınız*:");
+                    age = Integer.parseInt(scanner.nextLine());
+                    if (age<18)
+                        CustomPrint.printRed("Yaşınız 18'den küçük olamaz!");
+                }catch (Exception e){
+                    CustomPrint.printRed("Yaşınız 18'den küçük olamaz!");
+                }
+            }
+
             System.out.print("Email*: "); //required
             String email = scanner.nextLine().trim();
             while (!email.matches(Regex.EMAIL) ){
@@ -70,18 +81,17 @@ public class SignInUI {
             System.out.print("1 - Bireysel \n2 - Kurumsal*:"); // required
             String inputCustomerType = scanner.nextLine().trim();
 
-            UserSignInRequestDto dto = null;
+            UserAddServiceDto dto = null;
 
-            CustomerType customerType = null;
             boolean loop = true;
             while (loop){
                 switch (inputCustomerType){
                     case "1":
-                        dto = new UserSignInRequestDto(name,lastname,email,password, Role.CUSTOMER, CustomerType.INDIVIDUAL);
+                        dto = new UserAddServiceDto(name,lastname,email,password, age, Role.CUSTOMER, CustomerType.INDIVIDUAL);
                         loop = false;
                         break;
                     case "2":
-                        dto = new UserSignInRequestDto(name,lastname,email,password, Role.CUSTOMER, CustomerType.INSTITUTIONAL);
+                        dto = new UserAddServiceDto(name,lastname,email,password, age, Role.CUSTOMER, CustomerType.INSTITUTIONAL);
                         loop = false;
                         break;
                     default:
@@ -92,15 +102,14 @@ public class SignInUI {
 
 
             UserController controller = new UserController();
-            ResponseDto responseDto = controller.signIn(dto);
+            ResponseEntity<Boolean> responseEntity = controller.signIn(dto);
 
-            if (!responseDto.isSuccess()){
-                CustomPrint.printRed(responseDto.getMessage());
+            if (responseEntity.getData()==null){
+                CustomPrint.printRed(responseEntity.getMessage());
             }else{
-                UserSignInResponseDto body = (UserSignInResponseDto) responseDto.getBody();
-                CustomPrint.printGreen(responseDto.getMessage());
+                CustomPrint.printGreen(responseEntity.getMessage());
                 System.out.println();
-                CustomPrint.printBlue("Kayıt işleminiz başarılı şekilde tamamlanmıştır. Sayın " + body.getFullName() + ". Lütfen giriş işlemi yapınız!");
+                CustomPrint.printBlue("Kayıt işleminiz başarılı şekilde tamamlanmıştır. Lütfen giriş işlemi yapınız!");
                 System.out.println();
                 return;
             }

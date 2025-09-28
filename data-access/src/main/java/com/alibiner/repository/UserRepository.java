@@ -1,48 +1,54 @@
 package com.alibiner.repository;
 
-import com.alibiner.entity.User;
 import com.alibiner.enums.CustomerType;
 import com.alibiner.enums.Role;
-import com.alibiner.enums.errorMessages.ErrorCode;
-import com.alibiner.exceptions.DataNotInsertException;
-import com.alibiner.repository.interfaces.ICRUDRepository;
+import com.alibiner.interfaces.repository.IUserRepository;
+import com.alibiner.repositoryDto.request.user.UserCreatePersistenceDto;
+import com.alibiner.repositoryDto.response.user.UserResponsePersistenceDto;
+import com.alibiner.util.MyDbConnection;
 
 import java.sql.*;
-import java.util.List;
 
-public class UserRepository {
+public class UserRepository implements IUserRepository {
+
     private final Connection connection;
-    public UserRepository(Connection connection) {
-        this.connection = connection;
+
+    public UserRepository() {
+        this.connection = MyDbConnection.getInstance().getConnection();
     }
 
-
-    public int save(User user) throws SQLException, DataNotInsertException {
-
+    @Override
+    public int create(UserCreatePersistenceDto dto) throws SQLException {
         String sql = """
-                INSERT INTO users(first_name,last_name,email,passwd,created_date,user_role,customer_type)\s
-                VALUES (?,?,?,?,?,?,?)
+                INSERT INTO users(
+                                  first_name,
+                                  last_name,
+                                  email,
+                                  passwd,
+                                  created_date,
+                                  user_role,
+                                  customer_type,
+                                  age)\s
+                VALUES (?,?,?,?,?,?,?,?)
                 """;
 
         PreparedStatement ps = connection.prepareStatement(sql);
 
-        ps.setString(1,user.getFirstName());
-        ps.setString(2,user.getLastName());
-        ps.setString(3,user.getEmail());
-        ps.setString(4,user.getPassword());
-        ps.setTimestamp(5, Timestamp.valueOf(user.getCreatedDate()));
-        ps.setString(6,user.getRole().name());
-        ps.setString(7,user.getCustomerType().name());
+        ps.setString(1,dto.firstName());
+        ps.setString(2,dto.lastName());
+        ps.setString(3,dto.email());
+        ps.setString(4,dto.password());
+        ps.setTimestamp(5, Timestamp.valueOf(dto.createdDate()));
+        ps.setInt(6,dto.role().ordinal());
+        ps.setInt(7,dto.customerType().ordinal());
+        ps.setInt(8,dto.age());
 
-        int result = ps.executeUpdate();
-
-        if (result==0)
-            throw new DataNotInsertException(ErrorCode.DATA_NOT_INSERT);
-
-        return result;
-
+        return ps.executeUpdate();
     }
-    public User getById(int id) throws SQLException {
+
+
+    @Override
+    public UserResponsePersistenceDto getById(int id) throws SQLException {
         String sql = """
                 SELECT * FROM users
                 WHERE id = ?
@@ -57,21 +63,9 @@ public class UserRepository {
         return setUser(resultSet);
     }
 
-    public boolean isAlreadyExist(String email) throws SQLException {
 
-        String sql = """
-                SELECT * FROM users
-                WHERE email = ?
-                """;
-
-        PreparedStatement ps = connection.prepareStatement(sql);
-
-        ps.setString(1,email);
-        ResultSet rs = ps.executeQuery();
-        return rs.next();
-    }
-
-    public User getByEmail(String email) throws SQLException {
+    @Override
+    public UserResponsePersistenceDto getByEmail(String email) throws SQLException {
 
         String sql = """
                 SELECT * FROM users
@@ -86,18 +80,18 @@ public class UserRepository {
         return setUser(rs);
     }
 
-    private User setUser(ResultSet rs) throws SQLException {
-        User user = null;
+    private UserResponsePersistenceDto setUser(ResultSet rs) throws SQLException {
+        UserResponsePersistenceDto user = null;
         while (rs.next()){
-            user = new User(rs.getInt("id"),
+            user = new UserResponsePersistenceDto(
+                    rs.getInt("id"),
                     rs.getString("first_name"),
                     rs.getString("last_name"),
                     rs.getString("email"),
                     rs.getString("passwd"),
-                    rs.getTimestamp("created_date").toLocalDateTime(),
-                    rs.getTimestamp("updated_date").toLocalDateTime(),
-                    Role.valueOf(rs.getString("user_role")),
-                    CustomerType.valueOf(rs.getString("customer_type")));
+                    rs.getInt("age"),
+                    Role.values()[rs.getInt("user_role")],
+                    CustomerType.values()[rs.getInt("customer_type")]);
             break;
         }
         return user;

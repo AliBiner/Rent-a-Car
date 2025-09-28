@@ -20,21 +20,21 @@ Bu geliştirme süreci boyunca, Java ile katmanlı mimarinin inceliklerini, veri
   
   - Customer Type =  Individual, Institutional ✅
   
-  - ADMIN: Araç ekleme/güncelleme/silme/listeleme işlemleri (CRUD).
+  - ADMIN: Araç ekleme/güncelleme/silme/listeleme işlemleri (CRUD). ✅
 
   - CUSTOMER (Bireysel/Kurumsal): Araç arama, Kiralama, İptal işlemleri.
 
-  - Sadece giriş yapmış kullanıcılar kiralama başlatabilir.
+  - Sadece giriş yapmış kullanıcılar kiralama başlatabilir. ✅
 
 - Araçlar ve Ücretlendirme
 
-  - Araç tipleri: Otomobil, Helikopter, Motosiklet.
+  - Araç tipleri: Otomobil, Helikopter, Motosiklet. ✅
 
   - Araç tipleri ortak bir contract (interface/abstract class) ile modellenmeli, arama, fiyatlandırma ve kiralama akışları mevcut kodu bozmadan genişletilebilir olmalıdır.
 
-  - Her araç sınıfı için ayrı fiyat tarifesi.
+  - Her araç sınıfı için ayrı fiyat tarifesi. ✅
 
-  - Saatlik / Günlük / Haftalık / Aylık kiralama ve süreye göre ücret hesaplama.
+  - Saatlik / Günlük / Haftalık / Aylık kiralama ve süreye göre ücret hesaplama. ✅
 
 - Arama, Filtre, Sayfalama
 
