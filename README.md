@@ -1,5 +1,11 @@
 # Final Project Topic (Car Rental Application)
 
+# Setup and Review
+
+<a href="https://www.youtube.com/playlist?list=PLZ01JzwQ4HSx6cQJzp5dCwEVzEqwF5MRG"> Review Youtube Playlist</a>
+
+---
+
 ## Car Rental System
 
 In this project, you will build a **menu-based car rental application** that works in the terminal.  
