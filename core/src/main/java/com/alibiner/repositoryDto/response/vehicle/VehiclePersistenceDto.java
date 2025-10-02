@@ -22,4 +22,25 @@ public record VehiclePersistenceDto(
         float monthlyPrice
 ) {
 
+    @Override
+    public String toString() {
+        return "VehiclePersistenceDto{" +
+                "id=" + id +
+                ", brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", vehicleType=" + vehicleType +
+                ", price=" + price +
+                ", isRent=" + isRent +
+                ", machineType=" + machineType +
+                ", doorCount=" + doorCount +
+                ", cc=" + cc +
+                ", maxRange=" + maxRange +
+                ", wingCount=" + wingCount +
+                ", pilotCount=" + pilotCount +
+                ", hourlyPrice=" + hourlyPrice +
+                ", dailyPrice=" + dailyPrice +
+                ", weeklyPrice=" + weeklyPrice +
+                ", monthlyPrice=" + monthlyPrice +
+                '}';
+    }
 }
