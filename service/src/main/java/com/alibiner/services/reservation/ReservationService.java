@@ -1,5 +1,6 @@
 package com.alibiner.services.reservation;
 
+import java.util.*;
 import com.alibiner.enums.CustomerType;
 import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.enums.reservation.PaymentStatus;
@@ -16,6 +17,7 @@ import com.alibiner.interfaces.service.IVehicleService;
 import com.alibiner.interfaces.unitOfWork.IUnitOfWork;
 import com.alibiner.repositoryDto.request.payment.PaymentCreatePersistenceDto;
 import com.alibiner.repositoryDto.request.reservation.ReservationCreatePersistenceDto;
+import com.alibiner.repositoryDto.request.reservation.ReservationPersistenceDto;
 import com.alibiner.serviceDto.request.reservation.ReservationCreateServiceDto;
 import com.alibiner.serviceDto.response.user.UserServiceDto;
 import com.alibiner.serviceDto.response.vehicle.VehicleResponseServiceDto;
@@ -66,6 +68,16 @@ public class ReservationService implements IReservationService {
         }
 
         return false;
+    }
+
+    @Override
+    public List<ReservationPersistenceDto> getAllActive(int userId) throws SQLException {
+        return reservationRepository.getAllActive(userId);
+    }
+
+    @Override
+    public List<ReservationPersistenceDto> getAllPast(int userId) throws SQLException {
+        return reservationRepository.getAllPast(userId);
     }
 
     private void validateReservationDate(int vehicleId, LocalDateTime startDate, LocalDateTime finishDate) throws SQLException {

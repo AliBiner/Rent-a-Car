@@ -74,7 +74,7 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1,userId);
         ResultSet resultSet = ps.executeQuery();
-        return List.of();
+        return setReservations(resultSet);
     }
 
     @Override
@@ -97,6 +97,46 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
         ps.setInt(7,ReservationStatus.CANCELED.ordinal());
         ps.setInt(8,ReservationStatus.NO_SHOW.ordinal());
         return ps.executeQuery().next();
+    }
+
+    @Override
+    public List<ReservationPersistenceDto> getAllActive(int userId) throws SQLException {
+        String sql = """
+                SELECT *, 
+                       (SELECT 
+                            first_name || ' ' || last_name 
+                        FROM users where id = user_id) full_name 
+                FROM reservation
+                WHERE user_id = ?
+                AND status not in (?,?)
+                AND (start_date > ? OR finish_date > ?) 
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,userId);
+        ps.setInt(2,ReservationStatus.CANCELED.ordinal());
+        ps.setInt(3,ReservationStatus.COMPLETED.ordinal());
+        ps.setTimestamp(4,Timestamp.valueOf(LocalDateTime.now()));
+        ps.setTimestamp(5,Timestamp.valueOf(LocalDateTime.now()));
+        ResultSet resultSet = ps.executeQuery();
+        return setReservations(resultSet);
+    }
+
+    @Override
+    public List<ReservationPersistenceDto> getAllPast(int userId) throws SQLException {
+        String sql = """
+                SELECT *, 
+                       (SELECT 
+                            first_name || ' ' || last_name 
+                        FROM users where id = user_id) full_name 
+                FROM reservation
+                WHERE user_id = ?
+                AND finish_date < ? 
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,userId);
+        ps.setTimestamp(2,Timestamp.valueOf(LocalDateTime.now()));
+        ResultSet resultSet = ps.executeQuery();
+        return setReservations(resultSet);
     }
 
     private List<ReservationPersistenceDto> setReservations(ResultSet rs) throws SQLException {

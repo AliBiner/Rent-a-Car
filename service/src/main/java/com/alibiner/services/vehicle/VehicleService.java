@@ -2,6 +2,7 @@ package com.alibiner.services.vehicle;
 
 import com.alibiner.enums.Role;
 import com.alibiner.enums.errorMessages.ErrorCode;
+import com.alibiner.enums.vehicle.VehicleType;
 import com.alibiner.exceptions.general.NotFoundException;
 import com.alibiner.exceptions.user.UserForbiddenException;
 import com.alibiner.exceptions.user.UserNotFoundException;
@@ -34,6 +35,8 @@ public class VehicleService implements IVehicleService {
     private final IUserService userService;
     private final IRentPriceService rentPriceService;
     private final IRentMapper rentMapper;
+
+    private final int MAX_PAGINATION_SIZE = 20;
 
     public VehicleService(IVehicleRepository vehicleRepository, IVehicleMapper vehicleMapper, IUnitOfWork unitOfWork, IUserService userService, IRentPriceService rentPriceService, IRentMapper rentMapper) {
         this.vehicleRepository = vehicleRepository;
@@ -129,16 +132,21 @@ public class VehicleService implements IVehicleService {
         UserServiceDto user = userService.getById(userId);
         if (!user.role().equals(Role.ADMIN))
             throw new UserForbiddenException(ErrorCode.FORBIDDEN);
-
-        return vehicleRepository.delete(id);
+        boolean delete = vehicleRepository.delete(id);
+        if (delete){
+            unitOfWork.commit();
+            return true;
+        }
+        unitOfWork.rollback();
+        return false;
     }
 
     @Override
     public GetAllVehicleResponseServiceDto getAll(int offset, int limit) throws SQLException {
-        if (limit>10)
-            limit = 10;
 
-        List<VehiclePersistenceDto> persistenceDtos = vehicleRepository.getAll(offset,limit);
+        int validLimit = validateLimit(limit);
+
+        List<VehiclePersistenceDto> persistenceDtos = vehicleRepository.getAll(offset,validLimit);
 
         if (persistenceDtos == null)
             return null;
@@ -158,8 +166,86 @@ public class VehicleService implements IVehicleService {
     }
 
     @Override
+    public GetAllVehicleResponseServiceDto getAll(int offset, int limit, int modelID) throws SQLException {
+
+        int validLimit = validateLimit(limit);
+
+        List<VehiclePersistenceDto> persistenceDtos = vehicleRepository.getAll(offset,validLimit, modelID );
+
+        if (persistenceDtos == null)
+            return null;
+
+        List<VehicleResponseServiceDto> mappedList = new ArrayList<>();
+        for (VehiclePersistenceDto persistence : persistenceDtos){
+            mappedList.add(vehicleMapper.toVehicleResponseServiceDto(persistence));
+        }
+
+        int getAllCount = vehicleRepository.getAllCount(modelID);
+        GetAllVehicleResponseServiceDto result = new GetAllVehicleResponseServiceDto(
+                getAllCount,
+                mappedList
+        );
+
+        return result;
+    }
+
+    @Override
+    public GetAllVehicleResponseServiceDto getAll(int offset, int limit, VehicleType vehicleType) throws SQLException {
+
+        int validLimit = validateLimit(limit);
+
+        List<VehiclePersistenceDto> persistenceDtos = vehicleRepository.getAll(offset,validLimit, vehicleType );
+
+        if (persistenceDtos == null)
+            return null;
+
+        List<VehicleResponseServiceDto> mappedList = new ArrayList<>();
+        for (VehiclePersistenceDto persistence : persistenceDtos){
+            mappedList.add(vehicleMapper.toVehicleResponseServiceDto(persistence));
+        }
+
+        int getAllCount = vehicleRepository.getAllCount(vehicleType);
+        GetAllVehicleResponseServiceDto result = new GetAllVehicleResponseServiceDto(
+                getAllCount,
+                mappedList
+        );
+
+        return result;
+    }
+
+    @Override
+    public GetAllVehicleResponseServiceDto getAll(int offset, int limit, float minPrice, float maxPrice) throws SQLException {
+        int validLimit = validateLimit(limit);
+
+        List<VehiclePersistenceDto> persistenceDtos = vehicleRepository.getAll(offset,validLimit, minPrice, maxPrice );
+
+        if (persistenceDtos == null)
+            return null;
+
+        List<VehicleResponseServiceDto> mappedList = new ArrayList<>();
+        for (VehiclePersistenceDto persistence : persistenceDtos){
+            mappedList.add(vehicleMapper.toVehicleResponseServiceDto(persistence));
+        }
+
+        int getAllCount = vehicleRepository.getAllCount(minPrice,maxPrice);
+        GetAllVehicleResponseServiceDto result = new GetAllVehicleResponseServiceDto(
+                getAllCount,
+                mappedList
+        );
+
+        return result;
+    }
+
+    @Override
     public VehicleDetailServiceDto getDetailById(int id) throws SQLException {
         VehiclePersistenceDto persistenceDto = vehicleRepository.getById(id);
         return vehicleMapper.toVehicleDetailServiceDto(persistenceDto);
+    }
+
+
+    private int validateLimit(int limit){
+        if (limit>MAX_PAGINATION_SIZE)
+            return MAX_PAGINATION_SIZE;
+        return limit;
     }
 }

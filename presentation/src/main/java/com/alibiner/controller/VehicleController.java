@@ -1,6 +1,7 @@
 package com.alibiner.controller;
 
 import com.alibiner.enums.errorMessages.ErrorCode;
+import com.alibiner.enums.vehicle.VehicleType;
 import com.alibiner.exceptionHandler.MyExceptionHandler;
 import com.alibiner.exceptions.ValidationException;
 import com.alibiner.interfaces.mapper.IRentMapper;
@@ -76,6 +77,43 @@ public class VehicleController {
         }
     }
 
+    public ResponseEntity<GetAllVehicleResponseServiceDto> getAll(int offset, int limit, int modelID){
+        try {
+            if (offset < 0 || limit < 1 )
+                throw new ValidationException(ErrorCode.VALIDATION,"Offset 0'dan ve ya limit 1'den küçük olamaz!");
+
+            return new ResponseEntity<GetAllVehicleResponseServiceDto>().ok(vehicleService.getAll(offset,limit,modelID));
+        }catch (Exception e){
+            return new MyExceptionHandler<GetAllVehicleResponseServiceDto>(e).handle();
+        }
+    }
+
+    public ResponseEntity<GetAllVehicleResponseServiceDto> getAll(int offset, int limit, VehicleType vehicleType){
+        try {
+            if (offset < 0 || limit < 1 )
+                throw new ValidationException(ErrorCode.VALIDATION,"Offset 0'dan ve ya limit 1'den küçük olamaz!");
+
+            return new ResponseEntity<GetAllVehicleResponseServiceDto>().ok(vehicleService.getAll(offset,limit,vehicleType));
+        }catch (Exception e){
+            return new MyExceptionHandler<GetAllVehicleResponseServiceDto>(e).handle();
+        }
+    }
+
+    public ResponseEntity<GetAllVehicleResponseServiceDto> getAll(int offset, int limit, float minPrice, float maxPrice){
+        try {
+            if (offset < 0 || limit < 1 )
+                throw new ValidationException(ErrorCode.VALIDATION,"Offset 0'dan veya limit 1'den küçük olamaz!");
+            if (minPrice<0 || maxPrice<0)
+                throw new ValidationException(ErrorCode.VALIDATION,"min ve max değer negatif olamaz!");
+            if (minPrice>maxPrice)
+                throw new ValidationException(ErrorCode.VALIDATION,"min değer ve max değerden fazla olamaz!");
+
+            return new ResponseEntity<GetAllVehicleResponseServiceDto>().ok(vehicleService.getAll(offset,limit, minPrice, maxPrice));
+        }catch (Exception e){
+            return new MyExceptionHandler<GetAllVehicleResponseServiceDto>(e).handle();
+        }
+    }
+
     public ResponseEntity<VehicleDetailServiceDto> getDetailById(int id) {
         try {
             VehicleDetailServiceDto result = vehicleService.getDetailById(id);
@@ -92,5 +130,17 @@ public class VehicleController {
         } catch (Exception e) {
             return new MyExceptionHandler<Boolean>(e).handle();
         }
+    }
+
+    public ResponseEntity<Boolean> delete(int id, int userId) {
+       try {
+           if (id<=0)
+               throw new ValidationException(ErrorCode.VALIDATION,"id bilgisi geçersiz!");
+
+           boolean isDelete = vehicleService.delete(id, userId);
+           return new ResponseEntity<Boolean>().ok(isDelete);
+       } catch (Exception e) {
+           return new MyExceptionHandler<Boolean>(e).handle();
+       }
     }
 }

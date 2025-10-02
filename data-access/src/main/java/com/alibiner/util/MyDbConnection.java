@@ -7,16 +7,17 @@ import java.sql.SQLException;
 public class MyDbConnection {
     private static MyDbConnection instance;
     private Connection connection;
-    private static final String db_url = "jdbc:postgresql://localhost:5432/postgres";
-    private static final String db_user = "postgres";
-    private static final String db_password = "123456";
+    private static String db_url;
+    private static String db_user ;
+    private static String db_password;
 
     private MyDbConnection() {
         try {
             this.connection = DriverManager.getConnection(db_url,db_user,db_password);
             this.connection.setAutoCommit(false);
+            System.out.println( "\u001B[32m" +  "Db bağlantısı kuruldu!" + "\u001B[0m");
         } catch (SQLException e) {
-            System.out.println("Db bağlantısı kurulamadı!");
+            System.out.println( "\u001B[31m" +  "Db bağlantısı kurulamadı! " + e.getMessage() + "\u001B[0m" );
         }
 
     }
@@ -36,7 +37,7 @@ public class MyDbConnection {
             }
             return instance;
         } catch (SQLException e) {
-            System.out.println("Db bağlantısı kurulamadı!");
+            System.out.println( "\u001B[31m" +  "Db bağlantısı kurulamadı! " + e.getMessage() + "\u001B[0m" );
         }
         return instance;
     }
@@ -51,5 +52,12 @@ public class MyDbConnection {
         if (MyDbConnection.getInstance().getConnection()!=null){
             MyDbConnection.getInstance().getConnection().rollback();
         }
+    }
+
+    public static void config(String db_url, String db_user, String db_password){
+        MyDbConnection.db_url = db_url;
+        MyDbConnection.db_user = db_user;
+        MyDbConnection.db_password = db_password;
+        System.out.println( "\u001B[32m" +  "Db ayarlamaları yapıldı!" + "\u001B[0m");
     }
 }

@@ -71,15 +71,12 @@ public class AdminVehicleListUI {
                     System.out.println();
 
 
-                    CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage);
+                    CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage + " - Toplam Araç: " + vehicles.getData().totalCount());
 
                     System.out.println();
                     System.out.println("1 - Önceki Sayfa");
                     System.out.println("2 - Sonraki Sayfa");
                     System.out.println("3 - Araç Detayı");
-//            System.out.println("3 - Markaya Göre Listeleme");
-//            System.out.println("4 - Fiyat Göre Listeleme");
-//            System.out.println("5 - Araç Kiralama");
                     System.out.println("0 - Bir Üst Menü");
                     System.out.print("Seçiminiz: ");
                     String choice = scanner.nextLine();
@@ -99,14 +96,6 @@ public class AdminVehicleListUI {
                         case "3":
                             detailOptions(scanner);
                             break;
-//                case "3":
-//                    carBrandList(scanner);
-//                    break;
-//                case "4":
-//                    carPriceList(scanner);
-//                    break;
-//                case "5":
-//                    carDetail(scanner);
                         case "0":
                             return;
                         default:
@@ -125,13 +114,14 @@ public class AdminVehicleListUI {
 
     }
 
+
     private static void detailOptions(Scanner scanner){
         System.out.println();
         System.out.println("===========Araç Detay Ekranı==========");
 
         System.out.println();
         System.out.println("1 - Araç Güncelleme");
-//        System.out.println("2 - Araç Silme");
+        System.out.println("2 - Araç Silme");
         System.out.println("0 - Bir Üst Menü");
         System.out.print("Seçiminiz: ");
         String choice = scanner.nextLine();
@@ -140,7 +130,7 @@ public class AdminVehicleListUI {
                 updateCarUI(scanner);
                 break;
             case "2":
-//                deleteCarUI(scanner);
+                deleteCarUI(scanner);
                 break;
             case "0":
                 return;
@@ -173,9 +163,83 @@ public class AdminVehicleListUI {
 
             switch (vehicleDetail.getData().vehicleType()){
                 case CAR -> carDetailView(vehicleDetail.getData());
+                case HELICOPTER -> helicopterDetailView(vehicleDetail.getData());
+                case MOTORCYCLE -> motorcycleDetailView(vehicleDetail.getData());
             }
 
         }
+    }
+
+    private static void motorcycleDetailView(VehicleDetailServiceDto dto) {
+        System.out.println("id (" + dto.id() + ")");
+        int cc = UpdateFieldComponent.updateInt("CC*:",dto.cc());
+
+        float hourlyPrice = UpdateFieldComponent.updateFloat("Saatlik ücret",dto.hourlyPrice());
+        float dailyPrice = UpdateFieldComponent.updateFloat("Günlük ücret",dto.dailyPrice());
+        float weeklyPrice = UpdateFieldComponent.updateFloat("Haftalık ücret",dto.weeklyPrice());
+        float monthlyPrice = UpdateFieldComponent.updateFloat("Aylık ücret",dto.monthlyPrice());
+        float price = UpdateFieldComponent.updateFloat("Aracın değeri",dto.price());
+        MachineType machineType = UpdateFieldComponent.updateMachineType("Motor Tipi",dto.machineType());
+
+        VehicleUpdateServiceDto updatedDto = new VehicleUpdateServiceDto(
+                dto.id(),
+                dto.vehicleType(),
+                price,
+                dto.isRent(),
+                machineType,
+                dto.doorCount(),
+                cc,
+                dto.maxRange(),
+                dto.wingCount(),
+                dto.pilotCount(),
+                hourlyPrice,
+                dailyPrice,
+                weeklyPrice,
+                monthlyPrice,
+                UserSession.getId()
+        );
+
+        VehicleController controller = new VehicleController();
+        ResponseEntity<Boolean> update = controller.update(updatedDto);
+        if (update.getData()==null)
+            CustomPrint.printRed(update.getMessage());
+    }
+
+    private static void helicopterDetailView(VehicleDetailServiceDto dto) {
+        System.out.println("id (" + dto.id() + ")");
+        int wingCount = UpdateFieldComponent.updateInt("Kanat Sayısı*:",dto.wingCount());
+        int maxRange = UpdateFieldComponent.updateInt("Maximum Mesafe*:",dto.maxRange());
+        int pilotCount = UpdateFieldComponent.updateInt("Pilot Sayısı*:",dto.pilotCount());
+
+        float hourlyPrice = UpdateFieldComponent.updateFloat("Saatlik ücret",dto.hourlyPrice());
+        float dailyPrice = UpdateFieldComponent.updateFloat("Günlük ücret",dto.dailyPrice());
+        float weeklyPrice = UpdateFieldComponent.updateFloat("Haftalık ücret",dto.weeklyPrice());
+        float monthlyPrice = UpdateFieldComponent.updateFloat("Aylık ücret",dto.monthlyPrice());
+        float price = UpdateFieldComponent.updateFloat("Aracın değeri",dto.price());
+        MachineType machineType = UpdateFieldComponent.updateMachineType("Motor Tipi",dto.machineType());
+
+        VehicleUpdateServiceDto updatedDto = new VehicleUpdateServiceDto(
+                dto.id(),
+                dto.vehicleType(),
+                price,
+                dto.isRent(),
+                machineType,
+                dto.doorCount(),
+                dto.cc(),
+                maxRange,
+                wingCount,
+                pilotCount,
+                hourlyPrice,
+                dailyPrice,
+                weeklyPrice,
+                monthlyPrice,
+                UserSession.getId()
+        );
+
+        VehicleController controller = new VehicleController();
+        ResponseEntity<Boolean> update = controller.update(updatedDto);
+        if (update.getData()==null)
+            CustomPrint.printRed(update.getMessage());
     }
 
     private static void carDetailView( VehicleDetailServiceDto dto){
@@ -214,27 +278,28 @@ public class AdminVehicleListUI {
 
 
     }
-//
-//    private static void deleteCarUI(Scanner scanner){
-//        System.out.println();
-//        System.out.print("Silmek istediğiniz otombilin id'sini giriniz: ");
-//        String input = scanner.nextLine();
-//        if (input.isBlank()){
-//            CustomPrint.printRed("Id bilgisini boş geçemezsiniz!");
-//
-//        }else {
-//            try {
-//                int id = Integer.parseInt(input);
-//                CarController carController = new CarController();
-//                ResponseDto result = carController.delete(id,UserSession.getId());
-//                if (!result.isSuccess())
-//                    CustomPrint.printRed(result.getMessage());
-//                else
-//                    CustomPrint.printGreen(result.getMessage());
-//            } catch (Exception e) {
-//                CustomPrint.printRed("Hatalı veri girişi!");
-//            }
-//        }
-//
-//    }
+
+    private static void deleteCarUI(Scanner scanner){
+        System.out.println();
+        System.out.print("Silmek istediğiniz otombilin id'sini giriniz: ");
+        String input = scanner.nextLine();
+        if (input.isBlank()){
+            CustomPrint.printRed("Id bilgisini boş geçemezsiniz!");
+
+        }else {
+            try {
+                int id = Integer.parseInt(input);
+                VehicleController vehicleController = new VehicleController();
+                ResponseEntity<Boolean> result = vehicleController.delete(id,UserSession.getId());
+
+                if (result.getData()==null || result.getData() == false)
+                    CustomPrint.printRed(result.getMessage());
+                else
+                    CustomPrint.printGreen(result.getMessage());
+            } catch (Exception e) {
+                CustomPrint.printRed("Hatalı veri girişi!");
+            }
+        }
+
+    }
 }

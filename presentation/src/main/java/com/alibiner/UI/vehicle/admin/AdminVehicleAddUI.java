@@ -75,8 +75,6 @@ public class AdminVehicleAddUI {
                 CustomPrint.printRed("Hatalı veri girişi yaptınız!");
                 break;
         }
-
-
     }
 
     private static void addMotorcycleView(Scanner scanner, VehicleType motorcycle) {

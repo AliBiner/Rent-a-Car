@@ -2,9 +2,14 @@ package com.alibiner.UI.customer;
 
 import com.alibiner.UI.UserSession;
 import com.alibiner.UI.util.CustomPrint;
+import com.alibiner.controller.BrandController;
+import com.alibiner.controller.ModelController;
 import com.alibiner.controller.ReservationController;
 import com.alibiner.controller.VehicleController;
 import com.alibiner.enums.reservation.PaymentType;
+import com.alibiner.enums.vehicle.VehicleType;
+import com.alibiner.repositoryDto.response.brand.BrandPersistenceDto;
+import com.alibiner.repositoryDto.response.model.ModelResponsePersistenceDto;
 import com.alibiner.serviceDto.request.reservation.ReservationCreateServiceDto;
 import com.alibiner.serviceDto.response.vehicle.GetAllVehicleResponseServiceDto;
 import com.alibiner.serviceDto.response.vehicle.VehicleDetailServiceDto;
@@ -64,12 +69,15 @@ public class VehicleListUI {
             int countPage = (int) Math.ceil((double) result.getData().totalCount() / limit);
             System.out.println();
 
-            CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage);
+            CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage + " - Toplam Araç: " + result.getData().totalCount());
 
             System.out.println();
             System.out.println("1 - Önceki Sayfa");
             System.out.println("2 - Sonraki Sayfa");
             System.out.println("3 - Araç Kiralama");
+            System.out.println("4 - Markaya göre listeleme");
+            System.out.println("5 - Değere göre listeleme");
+            System.out.println("6 - Araç Tipine göre listeleme");
             System.out.println("0 - Bir Üst Menü");
             System.out.print("Seçiminiz: ");
             String choice = scanner.nextLine();
@@ -88,6 +96,16 @@ public class VehicleListUI {
                     break;
                 case "3":
                     rentVehicle(scanner);
+                    break;
+                case "4":
+                    brandList(scanner);
+                    break;
+                case "5":
+                    priceList(scanner);
+                    break;
+                case "6":
+                    vehicleTypeList(scanner);
+                    break;
                 case "0":
                     return;
                 default:
@@ -96,6 +114,106 @@ public class VehicleListUI {
             }
         }
 
+    }
+
+    private static void vehicleTypeList(Scanner scanner) {
+
+         while (true){
+            System.out.println();
+            System.out.println("===========Araç Tipine Göre Filtreleme =============");
+            System.out.println();
+
+             System.out.println("1 - Otomobil");
+             System.out.println("2 - Helikopter");
+             System.out.println("3 - Motosiklet");
+             System.out.print("Araç Tipi Seçiniz*:");
+             String vehicleTypeInput = scanner.nextLine();
+             VehicleType vehicleType = null;
+             switch (vehicleTypeInput){
+                 case "1":
+                     vehicleType = VehicleType.CAR;
+                     break;
+                 case "2":
+                     vehicleType = VehicleType.HELICOPTER;
+                     break;
+                 case "3":
+                     vehicleType = VehicleType.MOTORCYCLE;
+                     break;
+                 default:
+                     CustomPrint.printRed("Hatalı Veri Girişi!");
+                     continue;
+             }
+
+
+             int offset = 0;
+             final int limit = 1;
+             int currentPage = 1;
+             here:while (true){
+
+                VehicleController vehicleController = new VehicleController();
+
+                ResponseEntity<GetAllVehicleResponseServiceDto> vehiclesByBrand = vehicleController.getAll(offset, limit, vehicleType);
+
+
+                if (vehiclesByBrand.getData()==null){
+                    CustomPrint.printRed(vehiclesByBrand.getMessage());
+                    return;
+                }
+                else {
+
+                    while (true){
+
+                        for (VehicleResponseServiceDto vehicle : vehiclesByBrand.getData().dto()){
+                            CustomPrint.printBlue(vehicle.toString());
+                        }
+
+                        if (vehiclesByBrand.getData().totalCount()==0){
+                            CustomPrint.printRed("Eşleşen veri bulunamadı!");
+                            return;
+                        }else {
+                            int countPage = (int) Math.ceil((double) vehiclesByBrand.getData().totalCount() / limit);
+                            System.out.println();
+
+
+                            CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage + " - Toplam Araç: " + vehiclesByBrand.getData().totalCount());
+
+                            System.out.println();
+                            System.out.println("1 - Önceki Sayfa");
+                            System.out.println("2 - Sonraki Sayfa");
+                            System.out.println("3 - Araç Kiralama");
+                            System.out.println("0 - Bir Üst Menü");
+                            System.out.print("Seçiminiz: ");
+                            String choice = scanner.nextLine();
+                            switch (choice){
+                                case "1":
+                                    if (currentPage!=1){
+                                        currentPage--;
+                                        offset -= limit;
+                                    }
+                                    continue here;
+                                case "2":
+                                    if (currentPage!=countPage){
+                                        currentPage++;
+                                        offset += limit;
+                                    }
+                                    continue here;
+                                case "3":
+                                    rentVehicle(scanner);
+                                    break;
+                                case "0":
+                                    return;
+                                default:
+                                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                                    break;
+                            }
+                        }
+
+
+                    }
+
+                }
+            }
+        }
     }
 
     private static void rentVehicle(Scanner scanner) {
@@ -120,6 +238,7 @@ public class VehicleListUI {
 
             if (detailById.getData()==null){
                 CustomPrint.printRed( id + " ile eşleşen veri bulunamadı!");
+                return;
             }else {
                 CustomPrint.printBlue(detailById.getData().toString());
 
@@ -167,252 +286,280 @@ public class VehicleListUI {
                     CustomPrint.printRed("Hatalı Veri Girişi!");
                 }
             }
+            float amount = 0.00f;
+            while (true){
+                ReservationCreateServiceDto reservationRequest = new ReservationCreateServiceDto(
+                        UserSession.getId(),
+                        id,
+                        startDate,
+                        finishDate,
+                        amount,
+                        PaymentType.CREDIT_CART
+                );
 
-            ReservationCreateServiceDto reservationRequest = new ReservationCreateServiceDto(
-                    UserSession.getId(),
-                    id,
-                    startDate,
-                    finishDate,
-                    0,
-                    PaymentType.CREDIT_CART
-            );
+                ReservationController reservationController = new ReservationController();
+                ResponseEntity<Boolean> response = reservationController.postReservation(reservationRequest);
+                if (response.getData()==null || response.getData() == false){
 
-            ReservationController reservationController = new ReservationController();
-            ResponseEntity<Boolean> response = reservationController.postReservation(reservationRequest);
-            if (response.getData()==null || response.getData() == false){
-                CustomPrint.printRed(response.getMessage());
+                    if (response.getMessage().contains("Bu araç için deposit ödenmesi gerekmektedir!")
+                            || response.getMessage().contains("Ödenen tutar deposit tutarından az olamaz!")
+                            || response.getMessage().contains("Ödenen miktar toplam tutardan fazla olamaz!")){
+                        CustomPrint.printRed(response.getMessage());
+                        float tmp = 0;
+                        while (amount==0.00f || tmp == 0){
+                            try{
+                                System.out.print("Deposit*: ");
+                                amount = scanner.nextFloat();
+                                scanner.nextLine(); //clear scanner
+                                tmp = 1;
+                            }catch (Exception e){
+                                CustomPrint.printRed("Hatalı veri girişi!");
+                            }
+                        }
+                        continue;
+                    }
+
+                    CustomPrint.printRed(response.getMessage());
+                    return;
+                }
+                else {
+                    CustomPrint.printGreen(response.getMessage());
+                    return;
+                }
             }
-            else {
-                CustomPrint.printGreen(response.getMessage());
-                return;
-            }
+
         }
     }
 
 
-//    private static void carDetail(Scanner scanner) {
-//        System.out.println();
-//        System.out.println("===============Otomobil Detay Sayfası=============");
-//        System.out.println();
-//        System.out.print("Detayını görmek istediğiniz aracın id'sini giriniz: ");
-//        int id = 0;
-//        while (id==0){
-//            try {
-//                id = scanner.nextInt();
-//                scanner.nextLine(); // clear scanner
-//            } catch (Exception e) {
-//                System.out.println("Hatalı veri girişi!");
-//            }
-//        }
-//
-//        CarController controller = new CarController();
-//        ResponseDto responseDto = controller.getByIdForCustomer(id);
-//        if (!responseDto.isSuccess())
-//            CustomPrint.printRed(responseDto.getMessage());
-//        else {
-//            CarDetailDto carDetailDto = (CarDetailDto) responseDto.getBody();
-//            CustomPrint.printBlue(carDetailDto.toString());
-//            System.out.println();
-//            System.out.println("1 - Saatlik Kiralama");
-//            System.out.println("2 - Günlük Kiralama");
-//            System.out.println("3 - Haftalık Kiralama");
-//            System.out.println("4 - Aylık Kiralama");
-//            System.out.println("0 - Bir Üst Menü");
-//            String choice = scanner.nextLine();
-//            switch (choice){
-//                case "1":
-//                    carRentHourly(scanner);
-//                    break;
-//            }
-//        }
-//    }
-//
-//    private static void carRentHourly(Scanner scanner) {
-//        System.out.println();
-//        System.out.println("============Saatlik Kiralama İşlemleri===========");
-//        System.out.println();
-//        int hour = 0;
-//        while (hour==0){
-//            System.out.println("Kaç saat kiralamak istersiniz: ");
-//            try {
-//                hour = scanner.nextInt();
-//            } catch (Exception e) {
-//                CustomPrint.printRed("Hatalı Veri Girişi!");
-//            }
-//        }
-//
-//
-//
-//    }
-//
-//
-//    private static void carBrandList(Scanner scanner){
-//        int offset = 0;
-//        final int limit = 1;
-//        int currentPage = 0;
-//        while (true){
-//            System.out.println();
-//            System.out.println("===========Markalara Göre Filtreleme =============");
-//            System.out.println();
-//
-//            CarController controller = new CarController();
-//            ResponseDto responseDto = controller.getDistinctBrand();
-//            if (!responseDto.isSuccess()){
-//                CustomPrint.printRed(responseDto.getMessage());
-//            }
-//            else {
-//                List<String> brands = (List<String>) responseDto.getBody();
-//                for (String brand : brands){
-//                    CustomPrint.printBlue(brand);
-//                }
-//
-//                System.out.println();
-//                System.out.print("Arama yapmak istediğiniz markayı giriniz: ");
-//                String brand = scanner.nextLine().trim();
-//
-//                ResponseDto getAllBrandDto = controller.getAllRentable(offset,limit,brand);
-//                if (!getAllBrandDto.isSuccess()){
-//                    CustomPrint.printRed(getAllBrandDto.getMessage());
-//                }else {
-//                    while (true){
-//                        List<CarDto> carDtoList = (List<CarDto>) getAllBrandDto.getBody();
-//                        for (CarDto carDto : carDtoList){
-//                            CustomPrint.printBlue(carDto.toString());
-//                        }
-//
-//                        ResponseDto pagination = controller.getCountRentable(brand);
-//                        System.out.println();
-//
-//                        int countPage = (int) pagination.getBody() / limit -1;
-//                        if (countPage==-1){
-//                            CustomPrint.printRed("Eşleşen Veri Bulunamadı!");
-//                            return;
-//                        }
-//                        else{
-//                            CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage);
-//
-//                            System.out.println();
-//                            System.out.println("1 - Önceki Sayfa");
-//                            System.out.println("2 - Sonraki Sayfa");
-//                            System.out.println("0 - Bir Üst Menü");
-//                            System.out.print("Seçiminiz: ");
-//                            String choice = scanner.nextLine();
-//                            switch (choice){
-//                                case "1":
-//                                    if (currentPage!=0){
-//                                        currentPage--;
-//                                        offset -= limit;
-//                                    }
-//                                    break;
-//                                case "2":
-//                                    if (currentPage!=countPage){
-//                                        currentPage++;
-//                                        offset += limit;
-//                                    }
-//                                    break;
-//                                case "0":
-//                                    return;
-//                                default:
-//                                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
-//                                    break;
-//                            }
-//                        }
-//
-//                    }
-//
-//                }
-//            }
-//        }
-//    }
-//
-//    private static void carPriceList(Scanner scanner){
-//        int offset = 0;
-//        final int limit = 1;
-//        int currentPage = 0;
-//
-//        System.out.println();
-//        System.out.println("===========Fiyata Göre Filtreleme =============");
-//        System.out.println();
-//
-//        System.out.print("Min Fiyat:");
-//        float minPrice = -1.00f;
-//        while (minPrice==-1.00f){
-//            try{
-//                minPrice = scanner.nextFloat();
-//                scanner.nextLine(); //clear scanner
-//            }catch (Exception e){
-//                CustomPrint.printRed("Hatalı veri girişi!");
-//            }
-//        }
-//
-//        System.out.print("Max Fiyat:");
-//        float maxPrice = -1.00f;
-//        while (maxPrice==-1.00f){
-//            try{
-//                maxPrice = scanner.nextFloat();
-//                scanner.nextLine(); //clear scanner
-//            }catch (Exception e){
-//                CustomPrint.printRed("Hatalı veri girişi!");
-//            }
-//        }
-//
-//        here : while (true){
-//
-//            CarController controller = new CarController();
-//            ResponseDto responseDto = controller.getAllRentable(offset,limit,minPrice,maxPrice);
-//
-//            if (!responseDto.isSuccess()){
-//                CustomPrint.printRed(responseDto.getMessage());
-//            }
-//            else {
-//                List<CarDto> carDtos = (List<CarDto>) responseDto.getBody();
-//                for (CarDto carDto : carDtos){
-//                    CustomPrint.printBlue(carDto.toString());
-//                }
-//
-//                while (true){
-//                    ResponseDto pagination = controller.getCountRentable(minPrice,maxPrice);
-//                    System.out.println();
-//
-//                    int countPage = (int) pagination.getBody() / limit-1;
-//                    if (countPage==-1){
-//                        CustomPrint.printRed("Eşleşen Veri Bulunamadı!");
-//                        return;
-//                    }
-//                    else {
-//                        CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage);
-//
-//                        System.out.println();
-//                        System.out.println("1 - Önceki Sayfa");
-//                        System.out.println("2 - Sonraki Sayfa");
-//                        System.out.println("0 - Bir Üst Menü");
-//                        System.out.print("Seçiminiz: ");
-//                        String choice = scanner.nextLine();
-//                        switch (choice){
-//                            case "1":
-//                                if (currentPage!=0){
-//                                    currentPage--;
-//                                    offset -= limit;
-//                                }
-//                                continue here;
-//                            case "2":
-//                                if (currentPage!=countPage){
-//                                    currentPage++;
-//                                    offset += limit;
-//                                }
-//                                continue here;
-//                            case "0":
-//                                return;
-//                            default:
-//                                CustomPrint.printRed("Hatalı veri girişi yaptınız!");
-//                                break;
-//                        }
-//                    }
-//
-//                }
-//
-//            }
-//        }
-//    }
 
+    private static void brandList(Scanner scanner){
+
+         while (true){
+            System.out.println();
+            System.out.println("===========Markalara Göre Filtreleme =============");
+            System.out.println();
+
+            BrandController brandController = new BrandController();
+            ResponseEntity<List<BrandPersistenceDto>> brands = brandController.getAll();
+
+            if (brands.getData()== null){
+                CustomPrint.printRed(brands.getMessage());
+                return;
+            }else if (brands.getData().isEmpty()) {
+                CustomPrint.printGreen("Eşleşen Veri Bulunamadı!");
+                return;
+            }
+
+            for (BrandPersistenceDto brand : brands.getData()){
+                CustomPrint.printBlue(brand.toString());
+            }
+
+            int brandId = 0;
+            while (brandId == 0){
+                try{
+                    System.out.print("Aramak istediğiniz markanın id'sini giriniz: ");
+                    brandId = scanner.nextInt();
+                    scanner.nextLine(); //clear scanner
+                }catch (Exception e){
+                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                }
+            }
+
+            ModelController modelController = new ModelController();
+            ResponseEntity<List<ModelResponsePersistenceDto>> allModelByBrandId = modelController.getAllByBrandId(brandId);
+
+            if (allModelByBrandId.getData() == null){
+                CustomPrint.printRed(allModelByBrandId.getMessage());
+                return;
+            } else if (allModelByBrandId.getData().isEmpty()) {
+                CustomPrint.printGreen("Eşleşen Veri Bulunamadı!");
+                return;
+            }
+
+            for (ModelResponsePersistenceDto model : allModelByBrandId.getData()){
+                CustomPrint.printBlue(model.toString());
+            }
+
+            int modelId = 0;
+            while (modelId == 0){
+                try{
+                    System.out.print("Aramak istediğiniz modelin id'sini giriniz: ");
+                    modelId = scanner.nextInt();
+                    scanner.nextLine(); //clear scanner
+                }catch (Exception e){
+                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                }
+            }
+
+            int offset = 0;
+            final int limit = 1;
+            int currentPage = 1;
+            here: while (true){
+                VehicleController vehicleController = new VehicleController();
+
+                ResponseEntity<GetAllVehicleResponseServiceDto> vehiclesByBrand = vehicleController.getAll(offset, limit, modelId);
+
+
+                if (vehiclesByBrand.getData()==null){
+                    CustomPrint.printRed(vehiclesByBrand.getMessage());
+                    return;
+                }
+                else {
+
+                    while (true){
+
+                        for (VehicleResponseServiceDto vehicle : vehiclesByBrand.getData().dto()){
+                            CustomPrint.printBlue(vehicle.toString());
+                        }
+
+                        if (vehiclesByBrand.getData().totalCount()==0){
+                            CustomPrint.printRed("Eşleşen veri bulunamadı!");
+                            return;
+                        }else {
+                            int countPage = (int) Math.ceil((double) vehiclesByBrand.getData().totalCount() / limit);
+                            System.out.println();
+
+
+                            CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage + " - Toplam Araç: " + vehiclesByBrand.getData().totalCount());
+
+                            System.out.println();
+                            System.out.println("1 - Önceki Sayfa");
+                            System.out.println("2 - Sonraki Sayfa");
+                            System.out.println("3 - Araç Kiralama");
+                            System.out.println("0 - Bir Üst Menü");
+                            System.out.print("Seçiminiz: ");
+                            String choice = scanner.nextLine();
+                            switch (choice){
+                                case "1":
+                                    if (currentPage!=1){
+                                        currentPage--;
+                                        offset -= limit;
+                                    }
+                                    continue here;
+                                case "2":
+                                    if (currentPage!=countPage){
+                                        currentPage++;
+                                        offset += limit;
+                                    }
+                                    continue here;
+                                case "3":
+                                    rentVehicle(scanner);
+                                    break;
+                                case "0":
+                                    return;
+                                default:
+                                    CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                                    break;
+                            }
+                        }
+
+
+                    }
+
+                }
+            }
+
+
+
+            }
+        }
+
+    private static void priceList(Scanner scanner){
+
+
+        System.out.println();
+        System.out.println("===========Fiyata Göre Filtreleme =============");
+        System.out.println();
+
+        System.out.print("Min Fiyat:");
+        float minPrice = -1.00f;
+        while (minPrice==-1.00f){
+            try{
+                minPrice = scanner.nextFloat();
+                scanner.nextLine(); //clear scanner
+            }catch (Exception e){
+                CustomPrint.printRed("Hatalı veri girişi!");
+            }
+        }
+
+        System.out.print("Max Fiyat:");
+        float maxPrice = -1.00f;
+        while (maxPrice==-1.00f){
+            try{
+                maxPrice = scanner.nextFloat();
+                scanner.nextLine(); //clear scanner
+            }catch (Exception e){
+                CustomPrint.printRed("Hatalı veri girişi!");
+            }
+        }
+
+        int offset = 0;
+        final int limit = 2;
+        int currentPage = 1;
+        here : while (true){
+
+            VehicleController vehicleController = new VehicleController();
+            ResponseEntity<GetAllVehicleResponseServiceDto> vehiclesByPrice = vehicleController.getAll(offset, limit,
+                    minPrice, maxPrice);
+
+            if (vehiclesByPrice.getData() == null){
+                CustomPrint.printRed(vehiclesByPrice.getMessage());
+            }
+            else {
+
+                for (VehicleResponseServiceDto vehicle : vehiclesByPrice.getData().dto()){
+                    CustomPrint.printBlue(vehicle.toString());
+                }
+
+                while (true){
+
+                    if (vehiclesByPrice.getData().totalCount()==0){
+                        CustomPrint.printRed("Eşleşen veri bulunamadı!");
+                        return;
+                    }else {
+                        int countPage = (int) Math.ceil((double) vehiclesByPrice.getData().totalCount() / limit);
+                        System.out.println();
+
+                        CustomPrint.printBlue("Sayfa: " + currentPage + " / " + countPage + " - Toplam Araç: " + vehiclesByPrice.getData().totalCount());
+
+                        System.out.println();
+                        System.out.println("1 - Önceki Sayfa");
+                        System.out.println("2 - Sonraki Sayfa");
+                        System.out.println("3 - Araç Kiralama");
+                        System.out.println("0 - Bir Üst Menü");
+                        System.out.print("Seçiminiz: ");
+                        String choice = scanner.nextLine();
+                        switch (choice){
+                            case "1":
+                                if (currentPage!=1){
+                                    currentPage--;
+                                    offset -= limit;
+                                }
+                                continue here;
+                            case "2":
+                                if (currentPage!=countPage){
+                                    currentPage++;
+                                    offset += limit;
+                                }
+                                continue here;
+                            case "3":
+                                rentVehicle(scanner);
+                                break;
+                            case "0":
+                                return;
+                            default:
+                                CustomPrint.printRed("Hatalı veri girişi yaptınız!");
+                                break;
+                        }
+                    }
+
+                }
+
+            }
+        }
+    }
 }
+
+
+

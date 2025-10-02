@@ -19,7 +19,7 @@ public class ValidationException extends Exception implements IErrorCode {
     }
 
     public ValidationException(ErrorCode errorCode, String message) {
-        super(errorCode.getMessage());
+        super(message);
         this.errorCode = errorCode;
         this.message = message;
         this.messages = List.of();

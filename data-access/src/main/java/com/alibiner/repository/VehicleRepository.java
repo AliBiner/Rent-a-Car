@@ -115,19 +115,47 @@ public class VehicleRepository implements IVehicleRepository {
 
     @Override
     public boolean delete(int id) throws SQLException {
-        String detailSql = """
-                DELETE FROM vehicle_details
-                WHERE vehicle_id = ?
-                """;
 
-        PreparedStatement detail = connection.prepareStatement(detailSql);
-        detail.setInt(1,id);
-        int detailResult = detail.executeUpdate();
-        if (detailResult<=0)
-            return false;
+//        String reservationSql = """
+//                DELETE FROM reservation
+//                WHERE vehicle_id = ?
+//                """;
+//
+//        PreparedStatement reservation = connection.prepareStatement(reservationSql);
+//        reservation.setInt(1,id);
+//        int reservationResult = reservation.executeUpdate();
+//        if (reservationResult<=0){
+//            return false;
+//        }
+//
+//
+//
+//
+//        String rentPriceSql = """
+//                DELETE FROM rent_price
+//                WHERE vehicle_id = ?
+//                """;
+//
+//        PreparedStatement rentPrice = connection.prepareStatement(rentPriceSql);
+//        rentPrice.setInt(1,id);
+//        int rentPriceResult = rentPrice.executeUpdate();
+//        if (rentPriceResult<=0)
+//            return false;
+//
+//        String detailSql = """
+//                DELETE FROM vehicle_details
+//                WHERE vehicle_id = ?
+//                """;
+//
+//        PreparedStatement detail = connection.prepareStatement(detailSql);
+//        detail.setInt(1,id);
+//        int detailResult = detail.executeUpdate();
+//        if (detailResult<=0)
+//            return false;
 
         String vehicleSql = """
-                DELETE FROM vehicle
+                UPDATE vehicle 
+                SET is_delete = true
                 WHERE id = ?
                 """;
 
@@ -159,6 +187,7 @@ public class VehicleRepository implements IVehicleRepository {
                 FROM vehicle v
                 LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
                 LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
                 ORDER BY v.id
                 OFFSET ?
                 LIMIT ?
@@ -167,6 +196,121 @@ public class VehicleRepository implements IVehicleRepository {
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1,offset);
         ps.setInt(2,limit);
+        ResultSet resultSet = ps.executeQuery();
+
+        return setVehicles(resultSet);
+    }
+
+    @Override
+    public List<VehiclePersistenceDto> getAll(int offset, int limit, int modelID) throws SQLException {
+        String sql = """
+                SELECT v.id,
+                v.vehicle_type,                
+                (SELECT b.brand FROM model m JOIN brand b ON b.id = m.brand_id WHERE v.model_id = m.id) brand,
+                (SELECT m.model FROM model m WHERE v.model_id = m.id) model,
+                v.price,
+                v.is_rent,
+                vd.machine_type,
+                vd.door_count,
+                vd.cc,
+                vd.max_range,
+                vd.wing_count,
+                vd.pilot_count,
+                rp.hourly_price,
+                rp.daily_price,
+                rp.weekly_price,
+                rp.monthly_price
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.model_id = ?
+                ORDER BY v.id
+                OFFSET ?
+                LIMIT ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,modelID);
+        ps.setInt(2,offset);
+        ps.setInt(3,limit);
+        ResultSet resultSet = ps.executeQuery();
+
+        return setVehicles(resultSet);
+    }
+
+    @Override
+    public List<VehiclePersistenceDto> getAll(int offset, int limit, VehicleType vehicleType) throws SQLException {
+        String sql = """
+                SELECT v.id,
+                v.vehicle_type,                
+                (SELECT b.brand FROM model m JOIN brand b ON b.id = m.brand_id WHERE v.model_id = m.id) brand,
+                (SELECT m.model FROM model m WHERE v.model_id = m.id) model,
+                v.price,
+                v.is_rent,
+                vd.machine_type,
+                vd.door_count,
+                vd.cc,
+                vd.max_range,
+                vd.wing_count,
+                vd.pilot_count,
+                rp.hourly_price,
+                rp.daily_price,
+                rp.weekly_price,
+                rp.monthly_price
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.vehicle_type = ?
+                ORDER BY v.id
+                OFFSET ?
+                LIMIT ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,vehicleType.ordinal());
+        ps.setInt(2,offset);
+        ps.setInt(3,limit);
+        ResultSet resultSet = ps.executeQuery();
+
+        return setVehicles(resultSet);
+    }
+
+    @Override
+    public List<VehiclePersistenceDto> getAll(int offset, int limit, float minPrice, float maxPrice) throws SQLException {
+        String sql = """
+                SELECT v.id,
+                v.vehicle_type,                
+                (SELECT b.brand FROM model m JOIN brand b ON b.id = m.brand_id WHERE v.model_id = m.id) brand,
+                (SELECT m.model FROM model m WHERE v.model_id = m.id) model,
+                v.price,
+                v.is_rent,
+                vd.machine_type,
+                vd.door_count,
+                vd.cc,
+                vd.max_range,
+                vd.wing_count,
+                vd.pilot_count,
+                rp.hourly_price,
+                rp.daily_price,
+                rp.weekly_price,
+                rp.monthly_price
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.price between ? and ?
+                ORDER BY v.id
+                OFFSET ?
+                LIMIT ?
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setFloat(1,minPrice);
+        ps.setFloat(2,maxPrice);
+        ps.setInt(3,offset);
+        ps.setInt(4,limit);
         ResultSet resultSet = ps.executeQuery();
 
         return setVehicles(resultSet);
@@ -195,6 +339,7 @@ public class VehicleRepository implements IVehicleRepository {
                 LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
                 LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
                 WHERE v.id = ?
+                AND v.is_delete = false
                 """;
 
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -211,8 +356,67 @@ public class VehicleRepository implements IVehicleRepository {
                 FROM vehicle v
                 LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
                 LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
                 """;
         PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet resultSet = ps.executeQuery();
+        while (resultSet.next()){
+            return resultSet.getInt("count");
+        }
+        return 0;
+    }
+
+    @Override
+    public int getAllCount(int modelID) throws SQLException {
+        String sql = """
+                SELECT count(v.id)
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.model_id = ?
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,modelID);
+        ResultSet resultSet = ps.executeQuery();
+        while (resultSet.next()){
+            return resultSet.getInt("count");
+        }
+        return 0;
+    }
+
+    @Override
+    public int getAllCount(VehicleType vehicleType) throws SQLException {
+        String sql = """
+                SELECT count(v.id)
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.vehicle_type = ?
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,vehicleType.ordinal());
+        ResultSet resultSet = ps.executeQuery();
+        while (resultSet.next()){
+            return resultSet.getInt("count");
+        }
+        return 0;
+    }
+
+    @Override
+    public int getAllCount(float minPrice, float maxPrice) throws SQLException {
+        String sql = """
+                SELECT count(v.id)
+                FROM vehicle v
+                LEFT JOIN vehicle_details vd ON vd.vehicle_id = v.id
+                LEFT JOIN rent_price rp ON rp.vehicle_id = v.id
+                WHERE v.is_delete = false
+                AND v.price between ? and ?
+                """;
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setFloat(1,minPrice);
+        ps.setFloat(2,maxPrice);
         ResultSet resultSet = ps.executeQuery();
         while (resultSet.next()){
             return resultSet.getInt("count");
