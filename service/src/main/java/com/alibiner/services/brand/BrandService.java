@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class BrandService implements IBrandService {
 
-    IBrandRepository brandRepository;
+    private final IBrandRepository brandRepository;
 
     public BrandService(IBrandRepository brandRepository) {
         this.brandRepository = brandRepository;
