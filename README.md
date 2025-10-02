@@ -88,6 +88,7 @@ Follow the steps below to install PostgreSQL and restore the backup.
 ```bash
     brew install postgresql@17
     brew services start postgresql@17
+    brew install psql
 ```
 
 - **linux** 
