@@ -1,17 +1,17 @@
 # Final Project Topic (Car Rental Application)
 
-# Setup and Review
-
-<a href="https://www.youtube.com/playlist?list=PLZ01JzwQ4HSx6cQJzp5dCwEVzEqwF5MRG"> Review Youtube Playlist</a>
-
----
-
 ## Car Rental System
 
 In this project, you will build a **menu-based car rental application** that works in the terminal.  
 We will use a **layered architecture**, where every layer has its own responsibility. This design will make the system flexible, scalable, and easy to maintain.
 
 During the project, you will practice **Java programming**, **database operations**, and **building user flows** step by step.
+
+---
+
+# Setup and Review
+
+<a href="https://www.youtube.com/playlist?list=PLZ01JzwQ4HSx6cQJzp5dCwEVzEqwF5MRG"> Code Review Youtube Playlist</a>
 
 ---
 
@@ -79,13 +79,6 @@ During the project, you will practice **Java programming**, **database operation
 - Code must be **clean, readable, and well-indented** ✅
 - Names of **classes, variables, and methods** must follow Java standards and be in English ✅
 - Add **comments** and a **README** that explains the project ✅  
-
----
-
-# Setup and Review
-
-<a href="https://www.youtube.com/playlist?list=PLZ01JzwQ4HSx6cQJzp5dCwEVzEqwF5MRG"> Review Youtube Playlist</a>
-
 
 ---
 
