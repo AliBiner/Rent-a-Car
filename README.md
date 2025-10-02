@@ -206,15 +206,15 @@ This application requires **four command line arguments** to run:
 
 #### macOS / Linux
 ```bash
-    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
+    java -jar presentation-1.0-SNAPSHOT.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
     # Or with empty password
-    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
+    java -jar presentation-1.0-SNAPSHOT.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
 ```
 #### Windows (Command Prompt / PowerShell)
 ```bash
-java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
+java -jar presentation-1.0-SNAPSHOT.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
 # Or with empty password
-java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
+java -jar presentation-1.0-SNAPSHOT.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
 ```
 ### Notes:
 - All four arguments are required.
