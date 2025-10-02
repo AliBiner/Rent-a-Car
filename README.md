@@ -123,6 +123,8 @@ Follow the steps below to install PostgreSQL and restore the backup.
 Replace <your_postgres_user> and <your_db_name> with your PostgreSQL username and database name. 
 After this, the database is ready to use with the application.
 
+![DB_SCHEMA.png](DB_SCHEMA.png)
+
 ---
 
 ## Installing Java JDK 21
