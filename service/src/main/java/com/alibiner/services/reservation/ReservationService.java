@@ -16,6 +16,7 @@ import com.alibiner.interfaces.service.IUserService;
 import com.alibiner.interfaces.service.IVehicleService;
 import com.alibiner.interfaces.unitOfWork.IUnitOfWork;
 import com.alibiner.repositoryDto.request.payment.PaymentCreatePersistenceDto;
+import com.alibiner.repositoryDto.request.reservation.GetAllReservationPaginationDto;
 import com.alibiner.repositoryDto.request.reservation.ReservationCreatePersistenceDto;
 import com.alibiner.repositoryDto.request.reservation.ReservationPersistenceDto;
 import com.alibiner.serviceDto.request.reservation.ReservationCreateServiceDto;
@@ -35,6 +36,7 @@ public class ReservationService implements IReservationService {
     private final IUnitOfWork unitOfWork;
     private final int MIN_DEPOSIT_REQUIRED_VEHICLE_PRICE = 2_000_000;
     private final int MIN_DEPOSIT_REQUIRED_AGE = 30;
+    private final int MAX_PAGINATION_LIMIT = 10;
 
     public ReservationService(IUserService userService, IRentPriceService rentPriceService, IVehicleService vehicleService, IReservationRepository reservationRepository, IPaymentRepository paymentRepository, IUnitOfWork unitOfWork) {
         this.userService = userService;
@@ -71,13 +73,21 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public List<ReservationPersistenceDto> getAllActive(int userId) throws SQLException {
-        return reservationRepository.getAllActive(userId);
+    public GetAllReservationPaginationDto getAllActive(int offset, int limit, int userId) throws SQLException {
+        if (limit>MAX_PAGINATION_LIMIT)
+            limit = MAX_PAGINATION_LIMIT;
+        int totalCount = reservationRepository.getActiveCount(userId);
+        List<ReservationPersistenceDto> allActive = reservationRepository.getAllActive(offset,limit,userId);
+        return new GetAllReservationPaginationDto(totalCount,allActive);
     }
 
     @Override
-    public List<ReservationPersistenceDto> getAllPast(int userId) throws SQLException {
-        return reservationRepository.getAllPast(userId);
+    public GetAllReservationPaginationDto getAllPast(int offset, int limit, int userId) throws SQLException {
+        if (limit>MAX_PAGINATION_LIMIT)
+            limit = MAX_PAGINATION_LIMIT;
+        int totalCount = reservationRepository.getPastCount(userId);
+        List<ReservationPersistenceDto> allPast = reservationRepository.getAllPast(offset, limit, userId);
+        return new GetAllReservationPaginationDto(totalCount,allPast);
     }
 
     private void validateReservationDate(int vehicleId, LocalDateTime startDate, LocalDateTime finishDate) throws SQLException {

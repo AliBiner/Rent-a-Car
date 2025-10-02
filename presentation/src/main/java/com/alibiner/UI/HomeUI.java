@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class HomeUI {
     Scanner scanner = new Scanner(System.in);
 
-    public void view(){
+    public void view(boolean isTest){
         while (true){
             System.out.println("===============Ana Sayfa===============");
             System.out.println();
@@ -27,7 +27,7 @@ public class HomeUI {
                     break;
                 case "2":
                     LoginUI loginUI = new LoginUI();
-                    loginUI.view(scanner);
+                    loginUI.view(scanner, isTest);
                     loginUI = null;
                     break;
                 case "0":

@@ -13,7 +13,11 @@ public interface IReservationRepository{
     int update(int id, ReservationStatus status) throws SQLException;
     List<ReservationPersistenceDto> getAllByUserId(int userId) throws SQLException;
     boolean isAlreadyReservation(int vehicleId, LocalDateTime startDate, LocalDateTime finishDate) throws SQLException;
-    List<ReservationPersistenceDto> getAllActive(int userId) throws SQLException;
+    List<ReservationPersistenceDto> getAllActive(int offset, int limit, int userId) throws SQLException;
 
-    List<ReservationPersistenceDto> getAllPast(int userId) throws SQLException;
+    List<ReservationPersistenceDto> getAllPast(int offset, int limit, int userId) throws SQLException;
+
+    int getPastCount(int userId) throws SQLException;
+
+    int getActiveCount(int userId) throws SQLException;
 }

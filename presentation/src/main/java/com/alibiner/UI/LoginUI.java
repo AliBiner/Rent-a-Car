@@ -12,9 +12,19 @@ import java.util.Scanner;
 
 public class LoginUI {
 
-    public void view(Scanner scanner){
+    public void view(Scanner scanner, boolean isTest){
         while (true){
             System.out.println("=========Kullanıcı Giriş Ekranı========");
+
+            if (isTest){
+                System.out.println();
+                System.out.println("Test Kullanıcı Bilgileri");
+                System.out.println("email: admin@admin.com - şifre: 123456 ");
+                System.out.println("email: customer1@customer.com - şifre: 123456 ");
+                System.out.println("email: customer2@customer.com - şifre: 123456 ");
+                System.out.println("email: customer3@customer.com - şifre: 123456 ");
+                System.out.println();
+            }
 
             System.out.println();
             System.out.println("1 - Giriş İşlemi");

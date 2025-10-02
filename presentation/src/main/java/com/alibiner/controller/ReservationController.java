@@ -1,7 +1,9 @@
 package com.alibiner.controller;
 
 import java.util.*;
+import com.alibiner.enums.errorMessages.ErrorCode;
 import com.alibiner.exceptionHandler.MyExceptionHandler;
+import com.alibiner.exceptions.ValidationException;
 import com.alibiner.interfaces.mapper.IRentMapper;
 import com.alibiner.interfaces.mapper.IUserMapper;
 import com.alibiner.interfaces.mapper.IVehicleMapper;
@@ -18,6 +20,7 @@ import com.alibiner.repository.RentPriceRepository;
 import com.alibiner.repository.ReservationRepository;
 import com.alibiner.repository.UserRepository;
 import com.alibiner.repository.VehicleRepository;
+import com.alibiner.repositoryDto.request.reservation.GetAllReservationPaginationDto;
 import com.alibiner.repositoryDto.request.reservation.ReservationPersistenceDto;
 import com.alibiner.serviceDto.request.reservation.ReservationCreateServiceDto;
 import com.alibiner.services.UserService;
@@ -73,21 +76,26 @@ public class ReservationController {
     }
 
 
-    public ResponseEntity<List<ReservationPersistenceDto>> getAllActiveById(int userId) {
+    public ResponseEntity<GetAllReservationPaginationDto> getAllActiveById(int offset, int limit, int userId) {
         try {
-            List<ReservationPersistenceDto> allActive = reservationService.getAllActive(userId);
-            return new ResponseEntity<List<ReservationPersistenceDto>>().ok(allActive);
+            if (offset<0 || limit<1)
+                throw new ValidationException(ErrorCode.VALIDATION, "Offset ve limit bilgisi hatalı!");
+
+            GetAllReservationPaginationDto allActive = reservationService.getAllActive(offset,limit,userId);
+            return new ResponseEntity<GetAllReservationPaginationDto>().ok(allActive);
         } catch (Exception e) {
-            return new MyExceptionHandler<List<ReservationPersistenceDto>>(e).handle();
+            return new MyExceptionHandler<GetAllReservationPaginationDto>(e).handle();
         }
     }
 
-    public ResponseEntity<List<ReservationPersistenceDto>> getAllPastReservation(int userId) {
+    public ResponseEntity<GetAllReservationPaginationDto> getAllPastReservation(int offset, int limit, int userId) {
         try {
-            List<ReservationPersistenceDto> pastReservations = reservationService.getAllPast(userId);
-            return new ResponseEntity<List<ReservationPersistenceDto>>().ok(pastReservations);
+            if (offset<0 || limit<1)
+                throw new ValidationException(ErrorCode.VALIDATION, "Offset ve limit bilgisi hatalı!");
+            GetAllReservationPaginationDto pastReservations = reservationService.getAllPast(offset, limit, userId);
+            return new ResponseEntity<GetAllReservationPaginationDto>().ok(pastReservations);
         } catch (Exception e) {
-            return new MyExceptionHandler<List<ReservationPersistenceDto>>(e).handle();
+            return new MyExceptionHandler<GetAllReservationPaginationDto>(e).handle();
         }
     }
 }

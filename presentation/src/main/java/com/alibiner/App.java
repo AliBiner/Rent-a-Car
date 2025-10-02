@@ -9,12 +9,16 @@ public class App {
         MyDbConnection.config(args[0], args[1], args[2]);
         MyDbConnection.getInstance();
 
+        boolean isTest = false;
+        if (!args[3].isEmpty())
+            isTest = true;
+
         System.out.println();
         System.out.println();
 
         System.out.println("=======Araç Kiralama Uygulamasına Hoşgeldiniz==========");
 
         HomeUI homeUI = new HomeUI();
-        homeUI.view();
+        homeUI.view(isTest);
     }
 }

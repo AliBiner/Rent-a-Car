@@ -100,7 +100,7 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
     }
 
     @Override
-    public List<ReservationPersistenceDto> getAllActive(int userId) throws SQLException {
+    public List<ReservationPersistenceDto> getAllActive(int offset, int limit, int userId) throws SQLException {
         String sql = """
                 SELECT *, 
                        (SELECT 
@@ -110,6 +110,9 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
                 WHERE user_id = ?
                 AND status not in (?,?)
                 AND (start_date > ? OR finish_date > ?) 
+                ORDER BY id asc
+                OFFSET ?
+                LIMIT ?
                 """;
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1,userId);
@@ -117,12 +120,14 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
         ps.setInt(3,ReservationStatus.COMPLETED.ordinal());
         ps.setTimestamp(4,Timestamp.valueOf(LocalDateTime.now()));
         ps.setTimestamp(5,Timestamp.valueOf(LocalDateTime.now()));
+        ps.setInt(6,offset);
+        ps.setInt(7,limit);
         ResultSet resultSet = ps.executeQuery();
         return setReservations(resultSet);
     }
 
     @Override
-    public List<ReservationPersistenceDto> getAllPast(int userId) throws SQLException {
+    public List<ReservationPersistenceDto> getAllPast(int offset, int limit, int userId) throws SQLException {
         String sql = """
                 SELECT *, 
                        (SELECT 
@@ -131,12 +136,56 @@ public class ReservationRepository implements IReservationRepository, IPaymentRe
                 FROM reservation
                 WHERE user_id = ?
                 AND finish_date < ? 
+                ORDER BY id asc
+                OFFSET ?
+                LIMIT ?
                 """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,userId);
+        ps.setTimestamp(2,Timestamp.valueOf(LocalDateTime.now()));
+        ps.setInt(3,offset);
+        ps.setInt(4,limit);
+        ResultSet resultSet = ps.executeQuery();
+        return setReservations(resultSet);
+    }
+
+    @Override
+    public int getPastCount(int userId) throws SQLException {
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE user_id = ?
+                AND finish_date < ?
+                """;
+
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1,userId);
         ps.setTimestamp(2,Timestamp.valueOf(LocalDateTime.now()));
         ResultSet resultSet = ps.executeQuery();
-        return setReservations(resultSet);
+        resultSet.next();
+        return resultSet.getInt("count");
+    }
+
+    @Override
+    public int getActiveCount(int userId) throws SQLException {
+        String sql = """
+                SELECT count(*)
+                FROM reservation
+                WHERE user_id = ?
+                AND status not in (?,?)
+                AND (start_date > ? OR finish_date > ?)
+                """;
+
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,userId);
+        ps.setInt(2,ReservationStatus.CANCELED.ordinal());
+        ps.setInt(3,ReservationStatus.COMPLETED.ordinal());
+        ps.setTimestamp(4,Timestamp.valueOf(LocalDateTime.now()));
+        ps.setTimestamp(5,Timestamp.valueOf(LocalDateTime.now()));
+        ResultSet resultSet = ps.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("count");
     }
 
     private List<ReservationPersistenceDto> setReservations(ResultSet rs) throws SQLException {
