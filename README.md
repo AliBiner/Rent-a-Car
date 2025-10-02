@@ -195,27 +195,28 @@ Below are instructions for installing JDK 21 on different operating systems.
 ## Running the Application (JAR + Command Line Arguments)
 
 After building the project with Maven, you will get a `.jar` file.  
-This application requires **three command line arguments** to run:
+This application requires **four command line arguments** to run:
 
 1. `DB_URL` – JDBC URL of your PostgreSQL database (required)
 2. `DB_USER` – Database username (required)
 3. `DB_PASSWORD` – Database password (required, can be empty)
+4. `TEST_MODE` - Open Test Options (required, can be empty)
 
 ### Example Usage
 
 #### macOS / Linux
 ```bash
-    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword"
+    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
     # Or with empty password
-    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" ""
+    java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
 ```
 #### Windows (Command Prompt / PowerShell)
 ```bash
-java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword"
+java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "mypassword" "test"
 # Or with empty password
-java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" ""
+java -jar car-rental-app.jar "jdbc:postgresql://localhost:5432/mydb" "myuser" "" ""
 ```
 ### Notes:
-- All three arguments are required.
-- DB_PASSWORD can be empty, but DB_URL and DB_USER cannot be empty.
+- All four arguments are required.
+- TEST_MODE and DB_PASSWORD can be empty, but DB_URL and DB_USER cannot be empty.
 - The application reads these arguments at startup and connects to the PostgreSQL database.
