@@ -74,6 +74,12 @@ During the project, you will practice **Java programming**, **database operation
 - Names of **classes, variables, and methods** must follow Java standards and be in English ✅
 - Add **comments** and a **README** that explains the project ✅  
 
+---
+
+# Setup and Review
+
+<a href="https://www.youtube.com/playlist?list=PLZ01JzwQ4HSx6cQJzp5dCwEVzEqwF5MRG"> Review Youtube Playlist</a>
+
 
 ---
 
