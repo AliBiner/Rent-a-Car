@@ -1,5 +1,6 @@
 package com.alibiner.controller;
 
+import java.util.*;
 import com.alibiner.exceptionHandler.MyExceptionHandler;
 import com.alibiner.interfaces.mapper.IRentMapper;
 import com.alibiner.interfaces.mapper.IUserMapper;
@@ -17,6 +18,7 @@ import com.alibiner.repository.RentPriceRepository;
 import com.alibiner.repository.ReservationRepository;
 import com.alibiner.repository.UserRepository;
 import com.alibiner.repository.VehicleRepository;
+import com.alibiner.repositoryDto.request.reservation.ReservationPersistenceDto;
 import com.alibiner.serviceDto.request.reservation.ReservationCreateServiceDto;
 import com.alibiner.services.UserService;
 import com.alibiner.services.rentPrice.RentPriceService;
@@ -67,6 +69,25 @@ public class ReservationController {
             return new ResponseEntity<Boolean>().ok(result);
         } catch (Exception e) {
             return new MyExceptionHandler<Boolean>(e).handle();
+        }
+    }
+
+
+    public ResponseEntity<List<ReservationPersistenceDto>> getAllActiveById(int userId) {
+        try {
+            List<ReservationPersistenceDto> allActive = reservationService.getAllActive(userId);
+            return new ResponseEntity<List<ReservationPersistenceDto>>().ok(allActive);
+        } catch (Exception e) {
+            return new MyExceptionHandler<List<ReservationPersistenceDto>>(e).handle();
+        }
+    }
+
+    public ResponseEntity<List<ReservationPersistenceDto>> getAllPastReservation(int userId) {
+        try {
+            List<ReservationPersistenceDto> pastReservations = reservationService.getAllPast(userId);
+            return new ResponseEntity<List<ReservationPersistenceDto>>().ok(pastReservations);
+        } catch (Exception e) {
+            return new MyExceptionHandler<List<ReservationPersistenceDto>>(e).handle();
         }
     }
 }
