@@ -110,7 +110,7 @@ Follow the steps below to install PostgreSQL and restore the backup.
 ---
 
 ### Restoring the Backup
-1. Download <a href="[db.sql](db.sql)"> DB Backup </a>
+1. Download <a href="https://github.com/AliBiner/Rent-a-Car/blob/main/db.sql"> DB Backup </a>
 2. Open terminal/command prompt.
 3. Run the following command to restore the database from backup:
 ```bash
